@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuite hostname="Siarheis-MacBook-Pro.local" name="quickcheck.QuickCheckBinomialHeap" tests="1" errors="1" failures="0" skipped="0" time="-0.001" timestamp="2021-05-21T01:12:06">
+                     <properties>
+      <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/><property name="java.specification.version" value="11"/><property name="sun.cpu.isalist" value=""/><property name="sun.jnu.encoding" value="UTF-8"/><property name="sun.arch.data.model" value="64"/><property name="bootstrap.mainClass" value="xsbt.boot.Boot"/><property name="java.vendor.url" value="https://adoptopenjdk.net/"/><property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home/lib"/><property name="sun.java.command" value="/Users/siarheimelnik/Library/Application Support/Coursier/bin/sbt test"/><property name="jdk.debug" value="release"/><property name="java.specification.vendor" value="Oracle Corporation"/><property name="java.version.date" value="2020-07-14"/><property name="java.home" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home"/><property name="file.separator" value="/"/><property name="java.vm.compressedOopsMode" value="Zero based"/><property name="line.separator" value="
+"/><property name="java.specification.name" value="Java Platform API Specification"/><property name="java.vm.specification.vendor" value="Oracle Corporation"/><property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/><property name="java.runtime.version" value="11.0.8+10"/><property name="user.name" value="siarheimelnik"/><property name="file.encoding" value="UTF-8"/><property name="jnidispatch.path" value="/var/folders/kk/1t5_37414p1bfrbj1mzj5q4r0000gn/T/jna-703150241/jna4195528761118531228.tmp"/><property name="java.vendor.version" value="AdoptOpenJDK"/><property name="jna.loaded" value="true"/><property name="java.io.tmpdir" value="/var/folders/kk/1t5_37414p1bfrbj1mzj5q4r0000gn/T/"/><property name="java.version" value="11.0.8"/><property name="java.vm.specification.name" value="Java Virtual Machine Specification"/><property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/><property name="sun.os.patch.level" value="unknown"/><property name="java.library.path" value="/Users/siarheimelnik/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/><property name="java.vendor" value="AdoptOpenJDK"/><property name="sun.io.unicode.encoding" value="UnicodeBig"/><property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="gopherProxySet" value="false"/><property name="java.class.path" value="/Users/siarheimelnik/Library/Application Support/Coursier/bin/sbt:/Users/siarheimelnik/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/get-coursier/sbt/sbt-runner/0.2.0/sbt-runner-0.2.0.jar:/Users/siarheimelnik/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-sbt/sbt-launch/1.5.2/sbt-launch-1.5.2.jar"/><property name="java.vm.vendor" value="AdoptOpenJDK"/><property name="coursier.mainJar" value="/Users/siarheimelnik/Library/Application Support/Coursier/bin/sbt"/><property name="jline.shutdownhook" value="false"/><property name="user.timezone" value="Europe/Minsk"/><property name="coursier.main.arg-0" value="test"/><property name="os.name" value="Mac OS X"/><property name="java.vm.specification.version" value="11"/><property name="sun.java.launcher" value="SUN_STANDARD"/><property name="user.country" value="US"/><property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="sun.cpu.endian" value="little"/><property name="user.home" value="/Users/siarheimelnik"/><property name="user.language" value="en"/><property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/><property name="jline.esc.timeout" value="0"/><property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="path.separator" value=":"/><property name="os.version" value="10.16"/><property name="jna.nosys" value="true"/><property name="java.runtime.name" value="OpenJDK Runtime Environment"/><property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/><property name="jna.platform.library.path" value="/usr/lib:/usr/lib"/><property name="java.vendor.url.bug" value="https://github.com/AdoptOpenJDK/openjdk-support/issues"/><property name="sbt-launch.version" value="1.5.2"/><property name="user.dir" value="/Users/siarheimelnik/Projects/walkthrough/effective_scala/quickcheck"/><property name="os.arch" value="x86_64"/><property name="java.vm.info" value="mixed mode"/><property name="java.vm.version" value="11.0.8+10"/><property name="java.class.version" value="55.0"/>
+    </properties>
+                     <testcase classname="quickcheck.QuickCheckBinomialHeap" name="gen1" time="-0.001">
+                                                 <error message="scala.NotImplementedError: an implementation is missing" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: scala.NotImplementedError: an implementation is missing
+	at scala.Predef$.$qmark$qmark$qmark(Predef.scala:347)
+	at quickcheck.QuickCheckHeap.genHeap$lzycompute(QuickCheck.scala:10)
+	at quickcheck.QuickCheckHeap.genHeap(QuickCheck.scala:10)
+	at quickcheck.QuickCheckHeap.$anonfun$arbHeap$1(QuickCheck.scala:11)
+	at org.scalacheck.ArbitraryLowPriority$$anon$1.arbitrary$lzycompute(Arbitrary.scala:75)
+	at org.scalacheck.ArbitraryLowPriority$$anon$1.arbitrary(Arbitrary.scala:75)
+	at org.scalacheck.ArbitraryLowPriority.arbitrary(Arbitrary.scala:79)
+	at org.scalacheck.ArbitraryLowPriority.arbitrary$(Arbitrary.scala:79)
+	at org.scalacheck.Arbitrary$.arbitrary(Arbitrary.scala:62)
+	at org.scalacheck.Prop$.forAll(Prop.scala:913)
+	at quickcheck.QuickCheckHeap.$anonfun$new$1(QuickCheck.scala:13)
+	at org.scalacheck.Prop$.$anonfun$delay$1(Prop.scala:476)
+	at org.scalacheck.Prop$.$anonfun$apply$1(Prop.scala:307)
+	at org.scalacheck.PropFromFun.apply(Prop.scala:22)
+	at org.scalacheck.Test$.workerFun$1(Test.scala:326)
+	at org.scalacheck.Test$.$anonfun$check$1(Test.scala:355)
+	at org.scalacheck.Test$.$anonfun$check$1$adapted(Test.scala:355)
+	at org.scalacheck.Platform$.runWorkers(Platform.scala:40)
+	at org.scalacheck.Test$.check(Test.scala:355)
+	at org.scalacheck.ScalaCheckRunner$$anon$2.executeInternal(ScalaCheckFramework.scala:123)
+	at org.scalacheck.ScalaCheckRunner$$anon$2.$anonfun$execute$11(ScalaCheckFramework.scala:113)
+	at org.scalacheck.ScalaCheckRunner$$anon$2.$anonfun$execute$11$adapted(ScalaCheckFramework.scala:112)
+	at scala.collection.IterableOnceOps.foreach(IterableOnce.scala:576)
+	at scala.collection.IterableOnceOps.foreach$(IterableOnce.scala:574)
+	at scala.collection.AbstractIterable.foreach(Iterable.scala:904)
+	at scala.collection.IterableOps$WithFilter.foreach(Iterable.scala:874)
+	at org.scalacheck.ScalaCheckRunner$$anon$2.execute(ScalaCheckFramework.scala:112)
+	at sbt.ForkMain$Run.lambda$runTest$1(ForkMain.java:304)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+</error>
+                                               </testcase>
+                     <system-out><![CDATA[]]></system-out>
+                     <system-err><![CDATA[]]></system-err>
+                   </testsuite>

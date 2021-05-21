@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuite hostname="Siarheis-MacBook-Pro.local" name="quickcheck.QuickCheckSuite" tests="6" errors="0" failures="6" skipped="0" time="0.019" timestamp="2021-05-21T01:12:06">
+                     <properties>
+      <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/><property name="java.specification.version" value="11"/><property name="sun.cpu.isalist" value=""/><property name="sun.jnu.encoding" value="UTF-8"/><property name="sun.arch.data.model" value="64"/><property name="bootstrap.mainClass" value="xsbt.boot.Boot"/><property name="java.vendor.url" value="https://adoptopenjdk.net/"/><property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home/lib"/><property name="sun.java.command" value="/Users/siarheimelnik/Library/Application Support/Coursier/bin/sbt test"/><property name="jdk.debug" value="release"/><property name="java.specification.vendor" value="Oracle Corporation"/><property name="java.version.date" value="2020-07-14"/><property name="java.home" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home"/><property name="file.separator" value="/"/><property name="java.vm.compressedOopsMode" value="Zero based"/><property name="line.separator" value="
+"/><property name="java.specification.name" value="Java Platform API Specification"/><property name="java.vm.specification.vendor" value="Oracle Corporation"/><property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/><property name="java.runtime.version" value="11.0.8+10"/><property name="user.name" value="siarheimelnik"/><property name="file.encoding" value="UTF-8"/><property name="jnidispatch.path" value="/var/folders/kk/1t5_37414p1bfrbj1mzj5q4r0000gn/T/jna-703150241/jna4195528761118531228.tmp"/><property name="java.vendor.version" value="AdoptOpenJDK"/><property name="jna.loaded" value="true"/><property name="java.io.tmpdir" value="/var/folders/kk/1t5_37414p1bfrbj1mzj5q4r0000gn/T/"/><property name="java.version" value="11.0.8"/><property name="java.vm.specification.name" value="Java Virtual Machine Specification"/><property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/><property name="sun.os.patch.level" value="unknown"/><property name="java.library.path" value="/Users/siarheimelnik/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/><property name="java.vendor" value="AdoptOpenJDK"/><property name="sun.io.unicode.encoding" value="UnicodeBig"/><property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="gopherProxySet" value="false"/><property name="java.class.path" value="/Users/siarheimelnik/Library/Application Support/Coursier/bin/sbt:/Users/siarheimelnik/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/get-coursier/sbt/sbt-runner/0.2.0/sbt-runner-0.2.0.jar:/Users/siarheimelnik/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-sbt/sbt-launch/1.5.2/sbt-launch-1.5.2.jar"/><property name="java.vm.vendor" value="AdoptOpenJDK"/><property name="coursier.mainJar" value="/Users/siarheimelnik/Library/Application Support/Coursier/bin/sbt"/><property name="jline.shutdownhook" value="false"/><property name="user.timezone" value="Europe/Minsk"/><property name="coursier.main.arg-0" value="test"/><property name="os.name" value="Mac OS X"/><property name="java.vm.specification.version" value="11"/><property name="sun.java.launcher" value="SUN_STANDARD"/><property name="user.country" value="US"/><property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="sun.cpu.endian" value="little"/><property name="user.home" value="/Users/siarheimelnik"/><property name="user.language" value="en"/><property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/><property name="jline.esc.timeout" value="0"/><property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/><property name="path.separator" value=":"/><property name="os.version" value="10.16"/><property name="jna.nosys" value="true"/><property name="java.runtime.name" value="OpenJDK Runtime Environment"/><property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/><property name="jna.platform.library.path" value="/usr/lib:/usr/lib"/><property name="java.vendor.url.bug" value="https://github.com/AdoptOpenJDK/openjdk-support/issues"/><property name="sbt-launch.version" value="1.5.2"/><property name="user.dir" value="/Users/siarheimelnik/Projects/walkthrough/effective_scala/quickcheck"/><property name="os.arch" value="x86_64"/><property name="java.vm.info" value="mixed mode"/><property name="java.vm.version" value="11.0.8+10"/><property name="java.class.version" value="55.0"/>
+    </properties>
+                     <testcase classname="quickcheck.QuickCheckSuite" name=" (10pts)" time="0.008">
+                                                 <failure message="java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!
+	at quickcheck.QuickCheckSuite.fail$1(QuickCheckSuite.scala:17)
+	at quickcheck.QuickCheckSuite.checkBogus(QuickCheckSuite.scala:24)
+	at quickcheck.QuickCheckSuite.Bogus$u0020$u00285$u0029$u0020binomial$u0020heap$u0020does$u0020not$u0020satisfy$u0020properties$u002E$u0020$u002810pts$u0029(QuickCheckSuite.scala:52)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:74)
+</failure>
+                                               </testcase><testcase classname="quickcheck.QuickCheckSuite" name=" (10pts)" time="0.001">
+                                                 <failure message="java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!
+	at quickcheck.QuickCheckSuite.fail$1(QuickCheckSuite.scala:17)
+	at quickcheck.QuickCheckSuite.checkBogus(QuickCheckSuite.scala:24)
+	at quickcheck.QuickCheckSuite.Bogus$u0020$u00284$u0029$u0020binomial$u0020heap$u0020does$u0020not$u0020satisfy$u0020properties$u002E$u0020$u002810pts$u0029(QuickCheckSuite.scala:49)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:74)
+</failure>
+                                               </testcase><testcase classname="quickcheck.QuickCheckSuite" name=" (10pts)" time="0.001">
+                                                 <failure message="java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!
+	at quickcheck.QuickCheckSuite.fail$1(QuickCheckSuite.scala:17)
+	at quickcheck.QuickCheckSuite.checkBogus(QuickCheckSuite.scala:24)
+	at quickcheck.QuickCheckSuite.Bogus$u0020$u00283$u0029$u0020binomial$u0020heap$u0020does$u0020not$u0020satisfy$u0020properties$u002E$u0020$u002810pts$u0029(QuickCheckSuite.scala:46)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:74)
+</failure>
+                                               </testcase><testcase classname="quickcheck.QuickCheckSuite" name=" (10pts)" time="0.005">
+                                                 <failure message="java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!
+	at quickcheck.QuickCheckSuite.fail$1(QuickCheckSuite.scala:17)
+	at quickcheck.QuickCheckSuite.checkBogus(QuickCheckSuite.scala:24)
+	at quickcheck.QuickCheckSuite.Bogus$u0020$u00282$u0029$u0020binomial$u0020heap$u0020does$u0020not$u0020satisfy$u0020properties$u002E$u0020$u002810pts$u0029(QuickCheckSuite.scala:43)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:74)
+</failure>
+                                               </testcase><testcase classname="quickcheck.QuickCheckSuite" name=" (5pts)" time="0.003">
+                                                 <failure message="java.lang.AssertionError: null" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: java.lang.AssertionError: null
+	at org.junit.Assert.fail(Assert.java:86)
+	at org.junit.Assert.assertTrue(Assert.java:41)
+	at org.junit.Assert.assertTrue(Assert.java:52)
+	at quickcheck.QuickCheckSuite.Binomial$u0020heap$u0020satisfies$u0020properties$u002E$u0020$u00285pts$u0029(QuickCheckSuite.scala:36)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:74)
+</failure>
+                                               </testcase><testcase classname="quickcheck.QuickCheckSuite" name=" (10pts)" time="0.001">
+                                                 <failure message="java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!" type="sbt.ForkMain$ForkError">sbt.ForkMain$ForkError: java.lang.AssertionError: A bogus heap should NOT satisfy all properties. Try to find the bug!
+	at quickcheck.QuickCheckSuite.fail$1(QuickCheckSuite.scala:17)
+	at quickcheck.QuickCheckSuite.checkBogus(QuickCheckSuite.scala:24)
+	at quickcheck.QuickCheckSuite.Bogus$u0020$u00281$u0029$u0020binomial$u0020heap$u0020does$u0020not$u0020satisfy$u0020properties$u002E$u0020$u002810pts$u0029(QuickCheckSuite.scala:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:74)
+</failure>
+                                               </testcase>
+                     <system-out><![CDATA[]]></system-out>
+                     <system-err><![CDATA[]]></system-err>
+                   </testsuite>
