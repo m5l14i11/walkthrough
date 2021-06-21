@@ -1,0 +1,743 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "b4a613e7d912a8573ab6d1b27d1c4d5e",
+     "grade": false,
+     "grade_id": "cell-750141c6f8bfef8b",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "# Part 1: Implement Binary Search Tree \n",
+    "\n",
+    "We will begin by implementing binary search tree data structure in python. Please read the descriptions of functions carefully and complete them according to description. You should be familiar with objects in python. There are many tutorials online that you can use for this : https://www.tutorialspoint.com/python/python_classes_objects.htm"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 330,
+   "metadata": {
+    "deletable": false,
+    "nbgrader": {
+     "cell_type": "code",
+     "checksum": "86fc1a374ee0966203dfa6f29adcbdf2",
+     "grade": false,
+     "grade_id": "cell-e9863eea621076e4",
+     "locked": false,
+     "schema_version": 3,
+     "solution": true,
+     "task": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "class Node: \n",
+    "    # Implement a node of the binary search tree.\n",
+    "    # Constructor for a node with key and a given parent\n",
+    "    # parent can be None for a root node.\n",
+    "    def __init__(self, key, parent = None): \n",
+    "        self.key = key\n",
+    "        self.parent = parent \n",
+    "        self.left = None # We will set left and right child to None\n",
+    "        self.right = None\n",
+    "        # Make sure that the parent's left/right pointer\n",
+    "        # will point to the newly created node.\n",
+    "        if parent != None:\n",
+    "            if key < parent.key:\n",
+    "                assert(parent.left == None), 'parent already has a left child -- unable to create node'\n",
+    "                parent.left = self\n",
+    "            else: \n",
+    "                assert key > parent.key, 'key is same as parent.key. We do not allow duplicate keys in a BST since it breaks some of the algorithms.'\n",
+    "                assert(parent.right == None ), 'parent already has a right child -- unable to create node'\n",
+    "                parent.right = self\n",
+    "        \n",
+    "    # Utility function that keeps traversing left until it finds \n",
+    "    # the leftmost descendant\n",
+    "    def get_leftmost_descendant(self):\n",
+    "        if self.left != None:\n",
+    "            return self.left.get_leftmost_descendant()\n",
+    "        else:\n",
+    "            return self\n",
+    "    \n",
+    "    # TODO: Complete the search algorithm below\n",
+    "    # You can call search recursively on left or right child\n",
+    "    # as appropriate.\n",
+    "    # If search succeeds: return a tuple True and the node in the tree\n",
+    "    # with the key we are searching for.\n",
+    "    # Also note that if the search fails to find the key \n",
+    "    # you should return a tuple False and the node which would\n",
+    "    # be the parent if we were to insert the key subsequently.\n",
+    "    def search(self, key):\n",
+    "        if self.key == key: \n",
+    "            return (True, self)\n",
+    "        # your code here\n",
+    "        if self.key > key:\n",
+    "            if self.left:\n",
+    "                return self.left.search(key)\n",
+    "            else:\n",
+    "                return (False, self) \n",
+    "        else:\n",
+    "            if self.right:\n",
+    "                return self.right.search(key)\n",
+    "            else:\n",
+    "                return (False, self) \n",
+    "            \n",
+    "    \n",
+    "    #TODO: Complete the insert algorithm below\n",
+    "    # To insert first search for it and find out\n",
+    "    # the parent whose child the currently inserted key will be.\n",
+    "    # Create a new node with that key and insert.\n",
+    "    # return None if key already exists in the tree.\n",
+    "    # return the new node corresponding to the inserted key otherwise.\n",
+    "    def insert(self, key):\n",
+    "        # your code here\n",
+    "        (found, node) = self.search(key)\n",
+    "        \n",
+    "        if found:\n",
+    "            return None\n",
+    "        \n",
+    "        new_node = Node(key, node)\n",
+    "        \n",
+    "        if node.key < key:\n",
+    "            node.right = new_node\n",
+    "        else:\n",
+    "            node.left = new_node\n",
+    "            \n",
+    "        return new_node\n",
+    "        \n",
+    "    # TODO: Complete algorithm to compute height of the tree\n",
+    "    # height of a node whose children are both None is defined\n",
+    "    # to be 1.\n",
+    "    # height of any other node is 1 + maximum of the height \n",
+    "    # of its children.\n",
+    "    # Return a number that is th eheight.\n",
+    "    def height(self):\n",
+    "        # your code here\n",
+    "        if self is None:\n",
+    "            return 0\n",
+    "        else:\n",
+    "            leftH = 0 if self.left is None else self.left.height()\n",
+    "            rightH = 0 if self.right is None else self.right.height()\n",
+    "            \n",
+    "            return max(leftH, rightH) + 1\n",
+    "    \n",
+    "    #TODO: Write an algorithm to delete a key in the tree.\n",
+    "    # First, find the node in the tree with the key.\n",
+    "    # Recommend drawing pictures to visualize these cases below before\n",
+    "    # programming.\n",
+    "    # Case 1: both children of the node are None\n",
+    "    #   -- in this case, deletion is easy: simply find out if the node with key is its\n",
+    "    #      parent's left/right child and set the corr. child to None in the parent node.\n",
+    "    # Case 2: one of the child is None and the other is not.\n",
+    "    #   -- replace the node with its only child. In other words,\n",
+    "    #      modify the parent of the child to be the to be deleted node's parent.\n",
+    "    #      also change the parent's left/right child appropriately.\n",
+    "    # Case 3: both children of the parent are not None.\n",
+    "    #    -- first find its successor (go one step right and all the way to the left).\n",
+    "    #    -- function get_leftmost_descendant may be helpful here.\n",
+    "    #    -- replace the key of the node by its successor.\n",
+    "    #    -- delete the successor node.\n",
+    "    # return: no return value specified\n",
+    "    \n",
+    "    def delete(self, key):\n",
+    "        (found, node_to_delete) = self.search(key)\n",
+    "        assert(found == True), f\"key to be deleted:{key}- does not exist in the tree\"\n",
+    "        # your code here\n",
+    "        if not found:\n",
+    "            return\n",
+    "        \n",
+    "        left = node_to_delete.left\n",
+    "        right = node_to_delete.right\n",
+    "        parent = node_to_delete.parent\n",
+    "\n",
+    "        if not left and not right:\n",
+    "            if node_to_delete == parent.left:\n",
+    "                node_to_delete.parent.left = None\n",
+    "            else:\n",
+    "                node_to_delete.parent.right = None\n",
+    "        \n",
+    "        if not left and right:\n",
+    "            right.parent = parent\n",
+    "            \n",
+    "            if node_to_delete == parent.left:\n",
+    "                parent.left = right\n",
+    "            else:\n",
+    "                parent.right = right\n",
+    "        \n",
+    "        if left and not right:\n",
+    "            left.parent = parent\n",
+    "            \n",
+    "            if node_to_delete == parent.left:\n",
+    "                parent.left = left\n",
+    "            else:\n",
+    "                parent.right = left\n",
+    "        \n",
+    "                        \n",
+    "        if left and right:\n",
+    "            successor = right.get_leftmost_descendant()\n",
+    "\n",
+    "            key = successor.key\n",
+    "            self.delete(key)\n",
+    "            \n",
+    "            node_to_delete.key = key\n",
+    "        return    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 331,
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "code",
+     "checksum": "563eb77241bc953d40c126abe438dfea",
+     "grade": true,
+     "grade_id": "cell-7e7ccbff1c7a955a",
+     "locked": true,
+     "points": 15,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "-- Testing basic node construction (originally provided code) -- \n",
+      "-- Testing search -- \n",
+      "-- Testing insert -- \n",
+      "-- Testing height -- \n",
+      "Success: 15 points.\n"
+     ]
+    }
+   ],
+   "source": [
+    "t1 = Node(25, None)\n",
+    "t2 = Node(12, t1)\n",
+    "t3 = Node(18, t2)\n",
+    "t4 = Node(40, t1)\n",
+    "\n",
+    "print('-- Testing basic node construction (originally provided code) -- ')\n",
+    "assert(t1.left == t2), 'test 1 failed'\n",
+    "assert(t2.parent == t1),  'test 2 failed'\n",
+    "assert(t2.right == t3), 'test 3 failed'\n",
+    "assert (t3.parent == t2), 'test 4 failed'\n",
+    "assert(t1.right == t4), 'test 5 failed'\n",
+    "assert(t4.left == None), 'test 6 failed'\n",
+    "assert(t4.right == None), 'test 7 failed'\n",
+    "# The tree should be : \n",
+    "#             25\n",
+    "#             /\\\n",
+    "#         12     40\n",
+    "#         /\\\n",
+    "#     None  18\n",
+    "#\n",
+    "\n",
+    "print('-- Testing search -- ')\n",
+    "(b, found_node) = t1.search(18)\n",
+    "assert b and found_node.key == 18, 'test 8 failed'\n",
+    "(b, found_node) = t1.search(25)\n",
+    "assert b and found_node.key == 25, 'test 9 failed -- you should find the node with key 25 which is the root'\n",
+    "(b, found_node) = t1.search(26)\n",
+    "assert(not b), 'test 10 failed'\n",
+    "assert(found_node.key == 40), 'test 11 failed -- you should be returning the leaf node which would be the parent to the node you failed to find if it were to be inserted in the tree.'\n",
+    "\n",
+    "print('-- Testing insert -- ')\n",
+    "ins_node = t1.insert(26)\n",
+    "assert ins_node.key == 26, ' test 12 failed '\n",
+    "assert ins_node.parent == t4,  ' test 13 failed '\n",
+    "assert t4.left == ins_node,  ' test 14 failed '\n",
+    "\n",
+    "ins_node2 = t1.insert(33)\n",
+    "assert ins_node2.key == 33, 'test 15 failed'\n",
+    "assert ins_node2.parent == ins_node, 'test 16 failed'\n",
+    "assert ins_node.right == ins_node2, 'test 17 failed'\n",
+    "\n",
+    "print('-- Testing height -- ')\n",
+    "\n",
+    "assert t1.height() == 4, 'test 18 failed'\n",
+    "assert t4.height() == 3, 'test 19 failed'\n",
+    "assert t2.height() == 2, 'test 20 failed'\n",
+    "\n",
+    "print('Success: 15 points.')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 332,
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "code",
+     "checksum": "74caa7f2d99c2d32887345aea1c7e392",
+     "grade": true,
+     "grade_id": "cell-f721b5b3b9c814b9",
+     "locked": true,
+     "points": 15,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "-- All tests passed: 15 points!--\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Testing deletion\n",
+    "t1 = Node(16, None)\n",
+    "# insert the nodes in the list\n",
+    "lst = [18,25,10, 14, 8, 22, 17, 12]\n",
+    "for elt in lst:\n",
+    "    t1.insert(elt)\n",
+    "\n",
+    "# The tree should look like this\n",
+    "#               16\n",
+    "#            /     \\\n",
+    "#          10      18\n",
+    "#        /  \\     /  \\\n",
+    "#       8   14   17  25\n",
+    "#          /         /  \n",
+    "#         12        22\n",
+    "\n",
+    "\n",
+    "# Let us test the three deletion cases.\n",
+    "# case 1 let's delete node 8\n",
+    "# node 8 does not have left or right children.\n",
+    "t1.delete(8) # should have both children nil.\n",
+    "(b8,n8) = t1.search(8)\n",
+    "assert not b8, 'Test A: deletion fails to delete node.'\n",
+    "(b,n) = t1.search(10)\n",
+    "assert( b) , 'Test B failed: search does not work'\n",
+    "assert n.left == None, 'Test C failed: Node 8 was not properly deleted.'\n",
+    "\n",
+    "# Let us test deleting the node 14 whose right child is none.\n",
+    "# n is still pointing to the node 10 after deleting 8.\n",
+    "# let us ensure that it's right child is 14\n",
+    "assert n.right != None, 'Test D failed: node 10 should have right child 14'\n",
+    "assert n.right.key == 14, 'Test E failed: node 10 should have right child 14'\n",
+    "\n",
+    "# Let's delete node 14\n",
+    "t1.delete(14)\n",
+    "(b14, n14) = t1.search(14)\n",
+    "assert not b14, 'Test F: Deletion of node 14 failed -- it still exists in the tree.'\n",
+    "(b,n) = t1.search(10)\n",
+    "assert n.right != None , 'Test G failed: deletion of node 14 not handled correctly'\n",
+    "assert n.right.key == 12, f'Test H failed: deletion of node 14 not handled correctly: {n.right.key}'\n",
+    "\n",
+    "# Let's delete node 18 in the tree. \n",
+    "# It should be replaced by 22.\n",
+    "\n",
+    "t1.delete(18)\n",
+    "(b18, n18) = t1.search(18)\n",
+    "assert not b18, 'Test I: Deletion of node 18 failed'\n",
+    "assert t1.right.key == 22 , ' Test J: Replacement of node with successor failed.'\n",
+    "assert t1.right.right.left == None, ' Test K: replacement of node with successor failed -- you did not delete the successor leaf properly?'\n",
+    "\n",
+    "print('-- All tests passed: 15 points!--')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "0f6e0032713b4c21dc1faca0a3e059ea",
+     "grade": false,
+     "grade_id": "cell-2794e9d30eda0994",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "# Part 2: Height of Random Binary Search Trees\n",
+    "\n",
+    "The height of a binary search tree depends on the order in which we insert the keys of the tree. In this problem, we investigate a curious link between the recursion depth of quicksort algorithm on an array of n elements and the depth of binary search trees.\n",
+    "\n",
+    "Suppose we wish to insert keys the set of keys from $\\{0, \\ldots, n-1\\}$ into a binary search tree. Answer the questions below."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "b926d1d3bcd4c4f311076d0bc9f382c4",
+     "grade": false,
+     "grade_id": "cell-badad478014d6494",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "### 2(A)\n",
+    "Provide examples of insertion sequences such that the resulting tree will have the worst possible  height of $n$. Note that the answer below will not be graded but you are encouraged to solve it and compare with the solutions."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "e5889e2779c2a4d1c2e430be1c55fd39",
+     "grade": true,
+     "grade_id": "cell-daa2a7549ded138e",
+     "locked": false,
+     "points": 0,
+     "schema_version": 3,
+     "solution": true,
+     "task": false
+    }
+   },
+   "source": [
+    "YOUR ANSWER HERE"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "05dcc1c5fc4ec2e5e267d655f48790ec",
+     "grade": false,
+     "grade_id": "cell-7187bf3ede661909",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "### 2(B) \n",
+    "Let `s1,...,sj` be a sequence of $j \\geq 1$ keys inserted, wherein each `si` is a number between `0` and `n-1` and each number in the sequence is unique.\n",
+    "\n",
+    "Prove that if the sequence yields a tree of height `j` (worst possible case) then `s1` must be the minimum or maximum element in the sequence. \n",
+    "\n",
+    "**Hint:** Proof by contradiction will work. First note that `s1` will be the root of the tree obtained. Show that if `s1` is not the minimum or maximum then the resulting tree will have height < `n-1`). Note that the answer below will not be graded but you are encouraged to solve it and compare with the solutions."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "d0514787d37af71c43b24af6211ad310",
+     "grade": true,
+     "grade_id": "cell-2c4db194be4a08f8",
+     "locked": false,
+     "points": 0,
+     "schema_version": 3,
+     "solution": true,
+     "task": false
+    }
+   },
+   "source": [
+    "YOUR ANSWER HERE"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "9a31f750231d146824510253fcd1edcc",
+     "grade": false,
+     "grade_id": "cell-cb2fe8181cbb29b8",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "### 2(C)\n",
+    "Using the implementation of the binary search tree in part 1, complete the function `calculateAverageDepth(n, numTrials)` that performs the following experiment `numTrials` number of times.\n",
+    "\n",
+    "Each experiment run is as follows:\n",
+    "\n",
+    "- Take a list of numbers from 0 to n-1.\n",
+    "- Randomly shuffle the list: use random.shuffle function or (advanced) write your own shuffle.\n",
+    "- Insert the randomly shuffled list into a tree.\n",
+    "- Find and return the depth of the tree.\n",
+    "\n",
+    "Finally, we run the experiment above `numTrials` times and take the average of all the trials.\n",
+    "\n",
+    "We then plot the average depth of a random binary search tree as a function of n.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 243,
+   "metadata": {
+    "deletable": false,
+    "nbgrader": {
+     "cell_type": "code",
+     "checksum": "757ee4e27f009daa9b06cd39989298f2",
+     "grade": false,
+     "grade_id": "cell-f69051b8ddb67b88",
+     "locked": false,
+     "schema_version": 3,
+     "solution": true,
+     "task": false
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import random\n",
+    "\n",
+    "# 1. make list of  numbers from 0 to n-1\n",
+    "# 2. randomly shuffle the list\n",
+    "# 3. insert the random list elements in order into a tree.\n",
+    "# 4. return the height of the resulting ree.\n",
+    "def run_single_experiment(n):\n",
+    "    l = [i for i in range(n)]\n",
+    "\n",
+    "    random.shuffle(l)\n",
+    "    \n",
+    "    t = Node(l[0], None)\n",
+    "    \n",
+    "    for i in range(1, len(l)):\n",
+    "        t.insert(l[i])\n",
+    "        \n",
+    "    return t.height()\n",
+    "    \n",
+    "    \n",
+    "def run_multiple_trials(n, numTrials):\n",
+    "    lst_of_depths = [run_single_experiment(n) for j in range(numTrials)]\n",
+    "    return (sum(lst_of_depths)/len(lst_of_depths), lst_of_depths)\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 244,
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "code",
+     "checksum": "d10bf210f7b2f0fa372f6880a7e923b5",
+     "grade": true,
+     "grade_id": "cell-2d0bddb25820a123",
+     "locked": true,
+     "points": 15,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Average depth for 64 = 11.588\n",
+      "Average depth for 128 = 14.229\n",
+      "Passed all tests -- 15 points\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAYUAAAEWCAYAAACJ0YulAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADh0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uMy4yLjEsIGh0dHA6Ly9tYXRwbG90bGliLm9yZy+j8jraAAAcLElEQVR4nO3dfZwcVZ3v8c83CUJ4EthMMCaBQTYo4IWAQxaEvTc8KAFEQBc3rOsGF4m7goCLrgnXK/iQ+8JVnryoGAQJyFNEkSzoIkZdFkVCglnIA1wiCSSbkAxICCAGE377R50pKp2emZ7JVPf0zPf9evWrq06dqvqd7pn+dZ2qPqWIwMzMDGBIowMwM7P+w0nBzMxyTgpmZpZzUjAzs5yTgpmZ5ZwUzMws56RgOUmLJU1sdByNJOk0SSslvSzpkBrq/1LSx0qK5QZJX+6D7ewp6X5JL0m6rC9is4HLSWGQkLRC0nEVZWdKeqBjPiIOjIhfdrOdVkkhaVhJoTba14BzI2LniPhtvXZa+V70sanAc8CuEXFhSfsohaTzJS2X9IqkpZL2q1Lnu+lv8s8bEeNAM1D/sa1JSRoWEZsaGMLewOIG7r8MewNLohe/VG3k+5GOwM4CTgKWAm8DXqiocxSwb/2jG7h8pGC54tGEpAmS5kvaIGmtpMtTtfvT8/rUxXKEpCGSPifpaUnrJN0o6c2F7f5dWva8pP9TsZ9LJN0h6XuSNgBnpn0/KGm9pDWSrpb0psL2QtInJD2ZukS+JGnftM4GSbOL9SvaWDVWSdtLehkYCvynpN91sv57JD0u6UVJVwOqWP736RvtC5LulbR3RdznSXpK0nOSvpri2R+4BjgivabrC5vcXdI9qZ0PSdo3bUuSrkhteFHSo5LeWSXeG4ApwD+nbR+X2nqlpNXpcaWk7VP9iZJWSfqspGeB71bZ5pmSHpD0tdTO5ZJOqPZ69ZakIcDFwKciYklkfhcRvy/UGQb8P+Dcvtz3oBcRfgyCB7ACOK6i7EzggWp1gAeBj6TpnYHD03QrEMCwwnp/Dywj+ya3M/BD4Ka07ADgZeAo4E1k3TN/KuznkjR/KtmXlOHAu4DDyY5kW8m+JV5Q2F8Ac4BdgQOBjcDctP83A0uAKZ28Dp3GWtj2n3ey7ghgA/BXwHbAp4BNwMfS8lPTtvdPsX8O+HXFtn8B7AHsBfz/wrpbvBep7Abg98CEtL2bgdvSsuOBBcBuZIlpf2BUJ3HfAHy5MP9F4DfASKAF+DXwpbRsYmrTV4DtgeFVtndmes/OJkui/wisBtTJ/u8G1nfyuLuTdfZKr9f5wEpgOfAFYEihzmeAq7p73/zo4WdFowPwo05vdPaB/3LFP+Qf6Dwp3J/+CUdUbKeVrZPCXOAThfm3pw+NYcDngVsLy3YEXmPLpHB/N7FfANxZmA/gyML8AuCzhfnLgCs72VansRa23VlS+DvgN4V5Aat444P9J8BZheVD0mu8d2HbkwrLPwHMTdNnUj0pfKcwfyLweJo+hiypHF78oOwk7hvYMin8DjixMH88sCJNT0zvzw5dbO9MYFnFexrAW/rw7/XdaZv3kCW+1tTes9PysWQJ+M3dvW9+9Ozh7qPB5dSI2K3jQfah1JmzgP2AxyU9LOl9XdR9K/B0Yf5psoSwZ1q2smNBRPwBeL5i/ZXFGUn7Sbpb0rOpS+n/kn1LL1pbmH61yvzOvYi1O5VtiYrY9wauSt1e68m+5QsYXahTrP902mZXni1M/4HUroj4OXA18A1graSZknatoQ0d7ah8DYpxtEfEH2uNK72n0Plr3huvpud/iYj1EbEC+DZZYgS4EvhiRLzYh/s0fE7BOhERT0bEGWRdDF8B7pC0E9k3skqryT4QO+xF1gWxFlgDjOlYIGk48GeVu6uY/xbwODAuInYFLqKi734bdBVrd9aQfUMFsn794jzZB/7Hi4k3IoZHxK8LdYr190rxQPXXtUsR8fWIeBdZF9p+ZN0ptaj2GqwuzPfp0MmSfpLOZ1R7/KST1Z4gO2LpLJZjga+mLw4dCepBSX/Tl7EPRk4KVpWkv5XUEhGvk3U1AWwG2oHXyfrkO9wKfErSPpJ2Jvtmf3tkV63cAZws6d3p5O8X6P4DfheyvvuXJb2DrM+6r3QVa3fuAQ6U9IF0kvM84C2F5dcA0yUdCJBOYJ9esY3PSNpd0liy/vLbU/laYExnJ8grSTpM0l9I2g54Bfgj2ftTi1uBz0lqkTSCrIvvezWu22MRcUJkl/hWe1Q9QZ2OPm4nO0G+i6QxZOcw7k5V9gMOBsanB8DJwJ1ltWOwcFKwzkwCFqcrcq4CJkfEH9M/6wzgV6mb5HDgeuAmsvMQy8k+oD4JEBGL0/RtZN+0XwLWkZ0c7syngb9Jda/ljQ/OvtBprN2JiOeA04FLybrAxgG/Kiy/k+yo6rbU7bUIqPzQu4vsHMhCsiRzXSr/OdmlsM9Keq6GcHYle21eIOv+eZ7sJH4tvgzMBx4FHgMeSWX9zblk58FWk134cAvZ+0dErIuIZzseqf5zEfFq9U1ZrZRO0pjVRfp2vp6sa2h5o+OpJ0lB1u5ljY7FrDM+UrDSSTpZ0o7pnMTXyL6drmhsVGZWjZOC1cMpZF0Aq8m6XCaHD1HN+iV3H5mZWc5HCmZmlmvqAfFGjBgRra2tjQ7DzKypLFiw4LmIaKm2rLSkIGkHssv+tk/7uSMiLpa0B9klhq1kJxs/FBEvpHWmk/2SdjNwXkTc29U+WltbmT9/fllNMDMbkCQ93dmyMruPNgLHRETHD0wmpWvap5GN9zKObByaaSnIA4DJZL/OnAR8U9LQEuMzM7MKpSWFyLycZrdLjyC7EmVWKp9FNrIkqfy2iNiYrl9fRjY6pJmZ1UmpJ5olDZW0kOwXrPdFxEPAnhGxBiA9j0zVR7PlYGGr2HIgsY5tTlU2zv/89vb2MsM3Mxt0Sk0KEbE5IsaTDYg2odpNQAqqjYez1fWyETEzItoioq2lpep5EjMz66W6XJIaEeuBX5KdK1graRRAel6Xqq1iyxEkx7DlyI1mZlay0pJCGoFxtzQ9HDiObDjkOWS3ByQ935Wm5wCT060C9yH75eu8suIzM7Otlfk7hVHArHQF0RBgdkTcLelBYLaks4BnyEadJCIWS5pNdivFTcA5EVHrUMBmZtYHmnqYi7a2tvDvFMzMekbSgohoq7bMw1yYmVmuqYe5GCxap92zVdmKS09qQCRmNtD5SMHMzHJOCmZmlnNSMDOznJOCmZnlnBTMzCznpGBmZjknBTMzyzkpmJlZzknBzMxyTgpmZpZzUjAzs5yTgpmZ5ZwUzMws56RgZmY5JwUzM8s5KZiZWc5JwczMck4KZmaWc1IwM7Ock4KZmeWcFMzMLOekYGZmOScFMzPLOSmYmVnOScHMzHLDytqwpLHAjcBbgNeBmRFxlaRLgLOB9lT1ooj4cVpnOnAWsBk4LyLuLSu+Ztc67Z6tylZcelIDIjGzgaS0pABsAi6MiEck7QIskHRfWnZFRHytWFnSAcBk4EDgrcDPJO0XEZtLjNHMzApK6z6KiDUR8UiafglYCozuYpVTgNsiYmNELAeWARPKis/MzLZWl3MKklqBQ4CHUtG5kh6VdL2k3VPZaGBlYbVVVEkikqZKmi9pfnt7e+ViMzPbBqUnBUk7Az8ALoiIDcC3gH2B8cAa4LKOqlVWj60KImZGRFtEtLW0tJQUtZnZ4FRqUpC0HVlCuDkifggQEWsjYnNEvA5cyxtdRKuAsYXVxwCry4zPzMy2VFpSkCTgOmBpRFxeKB9VqHYasChNzwEmS9pe0j7AOGBeWfGZmdnWyrz66EjgI8BjkhamsouAMySNJ+saWgF8HCAiFkuaDSwhu3LpHF95ZGZWX6UlhYh4gOrnCX7cxTozgBllxWRmZl3zL5rNzCznpGBmZjknBTMzyzkpmJlZzknBzMxyTgpmZpZzUjAzs5yTgpmZ5ZwUzMws56RgZmY5JwUzM8s5KZiZWc5JwczMck4KZmaWc1IwM7Ock4KZmeWcFMzMLOekYGZmOScFMzPLOSmYmVnOScHMzHJOCmZmlnNSMDOznJOCmZnlnBTMzCznpGBmZrnSkoKksZJ+IWmppMWSzk/le0i6T9KT6Xn3wjrTJS2T9ISk48uKzczMqivzSGETcGFE7A8cDpwj6QBgGjA3IsYBc9M8adlk4EBgEvBNSUNLjM/MzCqUlhQiYk1EPJKmXwKWAqOBU4BZqdos4NQ0fQpwW0RsjIjlwDJgQlnxmZnZ1upyTkFSK3AI8BCwZ0SsgSxxACNTtdHAysJqq1JZ5bamSpovaX57e3uZYZuZDTqlJwVJOwM/AC6IiA1dVa1SFlsVRMyMiLaIaGtpaemrMM3MjJKTgqTtyBLCzRHxw1S8VtKotHwUsC6VrwLGFlYfA6wuMz4zM9tSmVcfCbgOWBoRlxcWzQGmpOkpwF2F8smStpe0DzAOmFdWfGZmtrVhJW77SOAjwGOSFqayi4BLgdmSzgKeAU4HiIjFkmYDS8iuXDonIjaXGJ+ZmVUoLSlExANUP08AcGwn68wAZpQVk5mZdc2/aDYzs5yTgpmZ5ZwUzMws56RgZmY5JwUzM8vVdPWRpHdGxKKygzFonXZPo0Mws0Gs1iOFayTNk/QJSbuVGpGZmTVMTUkhIo4CPkw2DMV8SbdIek+pkZmZWd3VfE4hIp4EPgd8FvhfwNclPS7pA2UFZ2Zm9VVTUpB0kKQryO6JcAxwcrp5zjHAFSXGZ2ZmdVTrMBdXA9cCF0XEqx2FEbFa0udKiczMzOqu1qRwIvBqxwB1koYAO0TEHyLiptKiMzOzuqr1nMLPgOGF+R1TmZmZDSC1JoUdIuLljpk0vWM5IZmZWaPUmhRekXRox4ykdwGvdlHfzMyaUK3nFC4Avi+p4/aYo4C/LickMzNrlJqSQkQ8LOkdwNvJbpzzeET8qdTIzMys7npy57XDgNa0ziGSiIgbS4nKzMwaotYB8W4C9gUWAh33TQ7AScHMbACp9UihDTggIqLMYMzMrLFqvfpoEfCWMgMxM7PGq/VIYQSwRNI8YGNHYUS8v5SozMysIWpNCpeUGYSZmfUPtV6S+u+S9gbGRcTPJO0IDC03NDMzq7dah84+G7gD+HYqGg38qKygzMysMWo90XwOcCSwAfIb7owsKygzM2uMWpPCxoh4rWNG0jCy3ymYmdkAUmtS+HdJFwHD072Zvw/8a1crSLpe0jpJiwpll0j6L0kL0+PEwrLpkpZJekLS8b1pjJmZbZtak8I0oB14DPg48GOy+zV35QZgUpXyKyJifHr8GEDSAcBk4MC0zjcl+US2mVmd1Xr10etkt+O8ttYNR8T9klprrH4KcFtEbASWS1oGTAAerHV/Zma27Wq9+mi5pKcqH73c57mSHk3dS7unstHAykKdVamsWixTJc2XNL+9vb2XIZiZWTW1dh+1kY2Sehjwl8DXge/1Yn/fIhtYbzywBrgslatK3aonsiNiZkS0RURbS0tLL0IwM7PO1JQUIuL5wuO/IuJK4Jie7iwi1kbE5kJ31IS0aBUwtlB1DLC6cn0zMytXrUNnH1qYHUJ25LBLT3cmaVRErEmzp5ENtAcwB7hF0uXAW4FxwLyebn+wa512T9XyFZeeVOdIzKxZ1Tr20WWF6U3ACuBDXa0g6VZgIjBC0irgYmCipPFkXUMryK5kIiIWS5oNLEnbPyciNlfbrpmZlafWq4+O7umGI+KMKsXXdVF/BjCjp/sxM7O+U2v30T91tTwiLu+bcMzMrJF6cue1w8j6/gFOBu5ny8tIzcysyfXkJjuHRsRLkA1XAXw/Ij5WVmBmZlZ/tf5OYS/gtcL8a0Brn0djZmYNVeuRwk3APEl3kl05dBpwY2lRmZlZQ9R69dEMST8h+zUzwEcj4rflhWVmZo1Qa/cRwI7Ahoi4ClglaZ+SYjIzswapdUC8i4HPAtNT0Xb0buwjMzPrx2o9UjgNeD/wCkBErKYXw1yYmVn/VmtSeC0igjRyqaSdygvJzMwapdakMFvSt4HdJJ0N/Iwe3HDHzMyaQ7dXH0kScDvwDmAD8Hbg8xFxX8mxmZlZnXWbFCIiJP0oIt4FOBGYmQ1gtXYf/UbSYaVGYmZmDVfrL5qPBv5B0gqyK5BEdhBxUFmBmZlZ/XWZFCTtFRHPACfUKR4zM2ug7o4UfkQ2OurTkn4QER+sR1BmZtYY3Z1TUGH6bWUGYmZmjdddUohOps3MbADqrvvoYEkbyI4YhqdpeONE866lRmdmZnXVZVKIiKH1CsTMzBqvJ0Nnm5nZAOekYGZmOScFMzPLOSmYmVnOScHMzHKlJQVJ10taJ2lRoWwPSfdJejI9715YNl3SMklPSDq+rLjMzKxzZR4p3ABMqiibBsyNiHHA3DSPpAOAycCBaZ1vSvLlsGZmdVZaUoiI+4HfVxSfAsxK07OAUwvlt0XExohYDiwDJpQVm5mZVVfvcwp7RsQagPQ8MpWPBlYW6q1KZWZmVkf95USzqpRVHWtJ0lRJ8yXNb29vLzksM7PBpd5JYa2kUQDpeV0qXwWMLdQbA6yutoGImBkRbRHR1tLSUmqwZmaDTb2TwhxgSpqeAtxVKJ8saXtJ+wDjgHl1js3MbNCr9XacPSbpVmAiMELSKuBi4FJgtqSzgGeA0wEiYrGk2cASYBNwTkRsLis2MzOrrrSkEBFndLLo2E7qzwBmlBWPmZl1r7+caDYzs37AScHMzHJOCmZmlnNSMDOznJOCmZnlnBTMzCznpGBmZjknBTMzyzkpmJlZzknBzMxyTgpmZpZzUjAzs5yTgpmZ5ZwUzMws56RgZmY5JwUzM8s5KZiZWc5JwczMck4KZmaWc1IwM7Ock4KZmeWcFMzMLOekYGZmOScFMzPLOSmYmVnOScHMzHJOCmZmlhvWiJ1KWgG8BGwGNkVEm6Q9gNuBVmAF8KGIeKER8ZmZDVaNPFI4OiLGR0Rbmp8GzI2IccDcNG9mZnXUn7qPTgFmpelZwKkNjMXMbFBqVFII4KeSFkiamsr2jIg1AOl5ZLUVJU2VNF/S/Pb29jqFa2Y2ODTknAJwZESsljQSuE/S47WuGBEzgZkAbW1tUVaAZmaDUUOOFCJidXpeB9wJTADWShoFkJ7XNSI2M7PBrO5JQdJOknbpmAbeCywC5gBTUrUpwF31js3MbLBrRPfRnsCdkjr2f0tE/Jukh4HZks4CngFOb0BsA1LrtHu2Kltx6UkNiMTM+ru6J4WIeAo4uEr588Cx9Y7HzMze0J8uSTUzswZr1NVHg161Lh0zs0bzkYKZmeWcFMzMLOekYGZmOScFMzPLOSmYmVnOScHMzHJOCmZmlvPvFAYpD31hZtX4SMHMzHJOCmZmlnNSMDOznJOCmZnlnBTMzCznpGBmZjknBTMzyzkpmJlZzknBzMxyTgpmZpZzUjAzs5yTgpmZ5ZwUzMws56RgZmY5D51tOQ+nbWY+UjAzs5yTgpmZ5fpdUpA0SdITkpZJmtboeMzMBpN+dU5B0lDgG8B7gFXAw5LmRMSSxkZmRdXOPYDPP5gNBP3tSGECsCwinoqI14DbgFMaHJOZ2aDRr44UgNHAysL8KuAvihUkTQWmptmNkhbVKbZ6GQE81+ggOugr21y3X7WnDwy09sDAa5Pb0729O1vQ35KCqpTFFjMRM4GZAJLmR0RbPQKrl4HWJren/xtobXJ7tk1/6z5aBYwtzI8BVjcoFjOzQae/JYWHgXGS9pH0JmAyMKfBMZmZDRr9qvsoIjZJOhe4FxgKXB8Ri7tYZWZ9IqurgdYmt6f/G2htcnu2gSKi+1pmZjYo9LfuIzMzayAnBTMzyzVtUmj24TAkXS9pXfF3FpL2kHSfpCfT8+6NjLEnJI2V9AtJSyUtlnR+Km/mNu0gaZ6k/0xt+kIqb9o2QTZygKTfSro7zTdteyStkPSYpIWS5qeypm0PgKTdJN0h6fH0/3REPdvUlEmhMBzGCcABwBmSDmhsVD12AzCpomwaMDcixgFz03yz2ARcGBH7A4cD56T3pJnbtBE4JiIOBsYDkyQdTnO3CeB8YGlhvtnbc3REjC9cy9/s7bkK+LeIeAdwMNl7Vb82RUTTPYAjgHsL89OB6Y2OqxftaAUWFeafAEal6VHAE42OcRvadhfZGFYDok3AjsAjZL+wb9o2kf32Zy5wDHB3Kmvm9qwARlSUNXN7dgWWky4CakSbmvJIgerDYYxuUCx9ac+IWAOQnkc2OJ5ekdQKHAI8RJO3KXW1LATWAfdFRLO36Urgn4HXC2XN3J4AfippQRoCB5q7PW8D2oHvpi6+70jaiTq2qVmTQrfDYVhjSNoZ+AFwQURsaHQ82yoiNkfEeLJv2BMkvbPRMfWWpPcB6yJiQaNj6UNHRsShZF3J50j6n40OaBsNAw4FvhURhwCvUOfur2ZNCgN1OIy1kkYBpOd1DY6nRyRtR5YQbo6IH6bipm5Th4hYD/yS7DxQs7bpSOD9klaQjUB8jKTv0bztISJWp+d1wJ1kIy03bXvIPttWpSNSgDvIkkTd2tSsSWGgDocxB5iSpqeQ9cs3BUkCrgOWRsTlhUXN3KYWSbul6eHAccDjNGmbImJ6RIyJiFay/5mfR8Tf0qTtkbSTpF06poH3Aoto0vYARMSzwEpJb09FxwJLqGObmvYXzZJOJOsf7RgOY0aDQ+oRSbcCE8mGxV0LXAz8CJgN7AU8A5weEb9vVIw9Ieko4D+Ax3ijv/oisvMKzdqmg4BZZH9jQ4DZEfFFSX9Gk7apg6SJwKcj4n3N2h5JbyM7OoCs2+WWiJjRrO3pIGk88B3gTcBTwEdJf3/UoU1NmxTMzKzvNWv3kZmZlcBJwczMck4KZmaWc1IwM7Ock4KZmeWcFGxAkrQ5jZy5OI1y+k+Sev33LumiwnRrcXTbXmyrRdJDaRiDvyyU35liXibpxTS9UNK7e7svs57yJak2IEl6OSJ2TtMjgVuAX0XExX2wvVayweR6NeSFpMnACRExpZPlE0m/IagoHxYRm3qzT7Na+UjBBrw0BMJU4Fxlhkr6qqSHJT0q6eOQfRhLuj99Y18i6RpJQyRdCgxP39pvTpsdKunadCTy0/SL5y1I2lvS3LSPuZL2Sj9M+hfgxLS9rdar2MaZkr4v6V/JBn7bSdm9OB5ORxqnpHpV22TWU04KNihExFNkf+8jgbOAFyPiMOAw4GxJ+6SqE4ALgf8B7At8ICKmAa9GNmb/h1O9ccA3IuJAYD3wwSq7vRq4MSIOAm4Gvh4RC4HPA7en7b1aQ/hHAFMi4hjgf5MNT3EYcDTw1TTEQ1dtMqvZsEYHYFZHHaPrvhc4SNJfpfk3k33IvwbMSwmkYyiSo8gGJau0PH3AAywguzdGpSOAD6Tpm8iOEHrjvsKQBu8lG9Tu02l+B7KhDzpr0/Je7tMGKScFGxTSODmbyUaXFPDJiLi3os5Eth6CvbOTbhsL05uBLruButlWd14pTAv4YEQ8UayQBiTcqk1mPeXuIxvwJLUA1wBXR3Zlxb3AP6ahvpG0X+qCgeyeCfukK5X+Gngglf+po34P/JpsNFKADxe2tS3uBT6ZkgCSDimUd9Yms5r5SMEGquHK7pi2Hdn9o28COob0/g5Zd88j6cO1HTg1LXsQuJTsnML9vDEK50zgUUmPkPXr1+I84HpJn0n7+Oi2NCj5EtnowI+m2FcA76PrNpnVzJekmiWdXQpqNpi4+8jMzHI+UjAzs5yPFMzMLOekYGZmOScFMzPLOSmYmVnOScHMzHL/DdLDLRWobC0cAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAeQAAAEWCAYAAAC39OTrAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADh0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uMy4yLjEsIGh0dHA6Ly9tYXRwbG90bGliLm9yZy+j8jraAAAgAElEQVR4nOzdd3gU1frA8e8bIITeOyShKC30jjQRG6Ai2CuIol57/VmvHb1e9dqvoihWFCsKooIiiEjvTXoPJaGEGlLO7493IktuQhJIMrvZ9/M8+yQ7Mzvz7uzuvHPOnDlHnHMYY4wxxl8RfgdgjDHGGEvIxhhjTFCwhGyMMcYEAUvIxhhjTBCwhGyMMcYEAUvIxhhjTBCwhAyISC8R2VxA644VEScixQti/flB1PsisltEZhXytieIyLWFuU1vu0+LSIKIbCvsbR+PiAwWkWl+x5GfROQhEXnX7zgyE5FoEdkvIsWOs4wTkUaFGVc2cYwSkacLaVs3isjLuVz2dhF5rqBjyo3C/O2ISDMRmZPLZVuKyPTcLJvrhCwiv3kH7JK5fU04EpH1ItLH7zjyqBtwJlDXOdexoDYiIo+LyMeB05xz5zrnPiiobWYTRz3gHqCZc65mYW47HDnnhjvnrvc7jsyccxudc2Wdc2nw9zHuhOMUkTgR+ck70cuxgwcRKeadGG4VkX0iMl9EKp7o9nMZYz8RmSYie0Rkm4i8IyLlAuZHAo8A/87lKkcAV4lI9Vxuv7OITBSRXSKyU0S+EJFa2SxbUkRGisiGgP1zbi7jOmEicqqIjPXi2+V9po0zLfYU8EJu1uecWwTsEZHzclo2VwlZRGKB7oADzs/Na/IimEuPYSIGWO+cO+B3IIUkBkh0zu3wO5CiLsx+2ynAGGBoLpd/AugKdAHKA1cDhwsmtL9VAJ4GagNNgbocm3wvAFY457bkZmXOucPABOCaXG6/EprEY9Hf4T7g/WyWLQ5sAnp6cT8KjPHyUUGqCHwHNAZqALOAsRkzvROI04Fv87DOT4Abc1zKOZfjA/gn8AfwEjDOm1YS2APEBSxXDTgEVPee9wcWeMtNB1oGLLse+D9gEZCM7vwHgDXoh7QMuDBg+WLAi0ACsA64FT1BKO7NrwCMBOKBLeiXrlg276cUMArY7W3nPmBzwPzawFfATm9btwfMexz4Evjci3Me0Mqb9xGQ7u2D/cD96BfPAdcCG734Hz7Ovu4HzAeS0C/j4wHzooCPgURvn84GamSznmz3ZablhqIHgTQv5ieAwcC0TMs5oJH3/yjgDWC8t/6ZQMOAZZsDE4FdwHbgIeAc4Ah60NoPLPSW/Q243vs/Aj073wDsAD4EKnjz8rofK3iv3+mt7xFv/X28zyfdi2NUFq/tBWxGS9E7vO/UkONsawiw3NsXa4Ebc7suoAr6409Cf/hPZd73mbbVDf0t7fG+H4OP9369eYPR3+9/vNetRRPBYG8dO4BrA7YxCnjL+wz3AVOAmID5r3ivSwLmAt2z+H187M2/3pv2cU7fYfR39533vVkN3JBpvWO897gPWAq0z2YfPQG85v1fAjgAPB/w2z+MJoZYvGMI8Az6GzjsfS9eD/je3wSsQo8XbwCSw/GyEeByWKaSt52Gx1su02fydMDzG7x9tMvbZ7UD5p0F/AXsBd70Pr/rs1nvQGBxwPP3gEcCnmfso2x/d8CVwOTcvI8stt8W2JeH5RcBg7KZN5iA3w76HZ/t7YfZQNeAefWBqd53aZL3uX6czXore/ugivf8GmBSpmXWA/d68e1F80NUwPw66HGn5HHfXy53wmrgH0A79ICa8QN6D3gmYLlbgB8DdvQOoBOaTK/1gi4Z8AYWAPWAUt60i9EfZQRwKfpDquXNuwlNLHW9L/Mkjk3I3wJvA2WA6ujB7cZs3s9zwO/ejq4HLMFLyN6256InIZFAA/QAdnbAgSEFuAj9sd+LJu0SAe+rTxZf6HfQg0Er9ASkaTax9QJaeHG0RBPaAG/ejcD3QGlvn7YDymeznmz3ZS6+yMc896ZlTsi7gI7owewT4DNvXjk06dyDHnzLAZ0C9t3Hmdb7G0cT8nXod60BUBb4GvjoBPfjh+hZbTnvtSuBoQH7eHNWrwuYnwo86X3GfYGDQKVslu8HNAQEPZs/CLTNzbqAz9BEUwaIQ08ms0zIQDR6ALncW1cVoHUu3u9gL4Yh3vfmafTg+gZ6Yn2Wt96yAZ/vPqCHN/+VTN+Pq7xtF/c+5214Bx+O/j4GoN+9UhybkLP9DqOJ4030e9MaPbk4I2C9h739Vwx4FpiRzX7qjZdk0IPyGmBmwLyMk8FYjj2G/EamxOXNH4eWmqK9mM7J4XiZm4TcAz0h+T9v/60EbjnO8qPwErL3HhLQY2xJ4DVgqjevKnoiNND7fO7wPo/sEvLLeL9d7/ls4OK8HL+8OHYd7/0e533dmd3nmMWyNbzvQJOcjmPosX03WutQHP3N7OZoUv0TrXKORE9yk8g+IQ8A4gOe/xt4I9My69GcU9vb9nLgpkzLJBFQKM1yW7nYCd28D7Sq93wFcJf3fx9gbcCyfwDXeP//F3gq07r+AnoGvIHrctj2AuAC7/9fObbk0YejZ7c1vC9JqYD5l5PNWRuaYM8JeD6Mowm5E7Ax0/IPAu97/z8e+AVCDzrxeKUEsk/IdQOmzQIuy+WX8GXgP97/15GppiEPX/y/9+XxvshZPfemZU7I7wbM64tWc2Xs9/nZbOfxzF96jk3IvwD/CJjX2PvuFc/LfkQP2MnoNeKMaTcCv3n/9yLnhHwI70DtTdsBdM7lvv4WuCOndXlxphBwgAGGZ973mb6H35zA+x0MrAqY18LblzUCpiVyNLmP4tiDdFm09Fgvm7h2c7SW6HG85JDV557ddxg9MU4DygVMexavBsNbx6SAec2AQ9nEk1EKroLWFD2E1lKURUvPr2b6beaUkLsFPB8DPJDD55+bhHyFt+6RXrwt0WR/ZjbLj+JoQh6JV+IP+HxSvPdzDfBnwDxBazP+JyGj7UZ2A6cGTFvFscfGjH2U7e8OOAVIy81vI9P2W6In9t1zsWwJtBD29nGWGczRhHw1MCvT/D+9ZaLRE9TSAfM+JouEjBYAtwCXB0x7B3gu03LrgasCnj8PvJVpmS1Aj+O9z9xcQ74W+Nk5l+A9/9SbBpokS4lIJxGJQc9qv/HmxQD3eI0H9ojIHvRHVztg3ZsCNyQi14jIgoDl49AzPrzXbcrmtTHoBxYf8Nq30ZJyVjKva0OmddXOFPdDaNL/n20759LRH3vg+8pKYGveg+iP6H94+3Ky16BgL1ozkLEPPgJ+Aj7zGoI8LyIlslnP8fZlfsju/dRDSyQnojbHfhYbOHrCldN2A1VFz3wzr6tOHmJJdM6l5mJbiMi5IjLDawCyBz1BCdzX2a2rGkevkwXGmZ3s9m1u3u/2gP8PATjnMk8LfH+B3/H96IGzNoCI3CMiy0Vkr/d+K3Ds+z3md51Jdt/h2mgpa99x3kPmzz4qq2vUzrlDwBy0tqIHWvKeDpzmTZtynPiykqvfbh4d8v4+6Zw75LThz2fodycnx/xOvM8nEd1XxxzbnGaC/7mDREQ6o8fyi5xzKwNm7UZrWTI73j4oh1bT5prXcn0CeuL6ew7LRqDfmyPopcrcyHwsgaPfp4zv2sGAef/znRWRasDPwJvOudEBs05kH+G9Zs/xgj5uQhaRUsAlQE+vRd424C6glYi08pLRGLRUdAV6fTnjB7UJrc6uGPAonemNuYBtxaBnHrei1QoV0apk8RaJR89WMtQL+H8TWkKoGrCt8s655tm8tfhMr4/OtK51meIu55wL/KH8/Vrvy1IX2Jr5PZ2gT9FrQvWccxXQa3kC4JxLcc494ZxrhlbF9SeLxhS52Jc5OYBWKWasLy8tkTeh1bdZyWnfbEVPiDJknMluz3rxbCWgJYbM68pVQ5W88O46+Aqt/qrh7esfyN2+3om+v+y+i5llt28L4v0GfsfLotVwW0WkO1rNegla7V4RPRgHvt9sP+fjfIe3ApUDW/ye5HuYglbttkGrYacAZ6OXWaZmF94JbutELDqJbR7zOxGRMmhtwBYyHSdFRDj2uImItEGPMdc5537JIq5T8xhPU2Bhbhf2jk+T0BrUj3JYVtAagRroteOUXG4m87EEjn6f4tHvWumAeYG/QUSkEpqMv3POPZNpPXneRyJSGz1p/ut4y+VUQh6AViM1Q0u/rdGd/ztHE8Gn6DXKK73/M7wD3OSV+EREynhN7rM6swC9hubQgxQiMgQt1WUYA9whInW8WwP+L2OGcy4e3Xkvikh5EYkQkYYi0jObbY0BHhSRSiJSF7gtYN4sIElE/k9ESnm3JsSJSIeAZdqJyEDv7PxO9GRghjdvO3oN9ESVQ8/eDotIR/REBwAROV1EWojeN5mEHoTTslhHTvsyJwuB5iLSWkSi0OrC3BoH1BSRO73bFsqJSCdv3nYg1juJycpo4C4Rqe8lgeHA55lKlzlyehvLGOAZb/sxwN1otVR+i0Sv4+0EUr3bMs7KQ5xfA4+LSGkRacbR2qesfAL0EZFLRKS4iFQRkdYF9H77ikg30dtgnkKvwW5Cv5+p6PstLiL/RFsI50p232Fv3dOBZ0UkSkRaog0OPznB+Kegx6hlzrkjeNXR6Mn2zmxec1K/Xe84F4V+J/DeR5a3iTrn1qDH0Ye930lT9Dg6Lheb+hQY4v0+S6K/k5nOufVoQ8sWIjLAOz7dAvx9Qi0iccCPwG3Oue+zWPcPaC1CXvRES7sZ2xglIqOyWlBE6qA1q284597Kxbr/i+ac87yaj9z6AThVRK7wfiuXonlsnHNuA1qD8riIRIpIF+DvW5JEpDxai/OHc+6BLNY9EWjrfda51Qv41TmXfLyFckrI16LXTjc657ZlPIDXgStFpLhzbiZaoqpNwIfinJuDtgR8HS3ir0br77PknFuGtqL+E/1htECvSWd4B026i9BWyD+gB4aMhHQN+kNY5m3vSyDL+9vQ60gb0MZYP6PVIRlxpKEfTmtvfgLwLlotl2Es+uPJaDQwMODM7VngEa+q+N7s3u9x/AN4UkT2oQ3LxgTMq+m9ryS00cAUsjjo5mJfHpdXhfUkeha7Csj1zfZeDcmZ6D7c5r3+dG/2F97fRBGZl8XL30M/i6novj/MsSdLeXEb+r1ci8b/qbf+fOW939vRz2k3egL1XR5WcStatbUNvU74/nG2tRGt0rwHrUJegDaygfx/v58Cj3nbaYeecIMeqCagjZA2oJ/R8aqoMzved/hy9JrlVvTS12POuYknGP909NpsRml4mRdrdqVj0MZrF4n2t/DqCWwzBq2KXuo9P0RAiUi0E5yHApa/3HtNIppIH82ixPo/vGUeRWtm4tFak8u8eQlog87nvfU2Q5NPRiK4B71UMlK0U5T9IrI0YPXfA028El2OvKTUFwjsS6Ae2R9vrkdPeh4L2P7+gPU9JCITvP9j0LYQrYFtActfmeWaAzjnEtHal3vQ/XA/0D/g0uuV6O1miWgjx885uo8uBDqgJz37Ax7R3rq3oycVF+QUR4Ar0drO4xLvYnPI8UoibznnMldLFPR2H0cbN11VmNs1prB4pZvNzrlH/I7FnByvNmozcKVzbnIuXzMMbSB4Zy6WvQ29vHa/9zwSrWFrmYfqZd+JyOdow9THcrl8M/QkpKPLIYmKSAtghHOuS07rDZmb9kWvZ5+OlmhroGfv3xz3RcYYE2ZE5Gy0b4BDaB8LwtFLajlyzo3Iw7KvZXp+BK1iDmreJchdaE3cWWhpN9ddgHq1kB1yXFCXXYyWxnMUSn1ZC1rVvButsl6OVukaY4w5qgvaGj8BvXQ0II/XX8NBTbRdwX7gVeBm59x8XyMihKusjTHGmKIklErIxhhjTJEVMteQg0HVqlVdbGys32EYY0xImTt3boJzrprfcQQ7S8h5EBsby5w5uRoC0xhjjEdEjtcDnfFYlbUxxhgTBCwhG2OMMUHAErIxxhgTBCwhG2OMMUHAErIxxhgTBCwhG2OMMUHAErIxxhgTBCwhG2OMyVLycUfvNfnNOgYxxhiDc7BqFfzxx9FHmTJgfSEVniKfkEXkPXSg6h3OuThv2lPocFvpwA5gsHNuq39RGmNM4TpyBBYtgvbt9fl118GoUfp/pUrQtSv06OFbeGGpyI/2JCI90CG2PgxIyOWdc0ne/7ejg3HflNO62rdv76zrTGNMKNq3T0u9v/+uf2fOhMOHYdMmqFsXJk6EDRvgtNOgcWOIyMcLmiIy1znXPv/WWDQV+RKyc26qiMRmmpYU8LQMULTPSowxYWfbNk2+nTtDvXrw7bdwzTVQrBi0bQs33QTdukHFirr8mWf6G68Jg4ScHRF5BrgG2Auc7nM4xhhzUvbvh6++gqlT9bF6tU5/8024+WY491yYNEkTdJky/sZqslbkq6wBvBLyuIwq60zzHgSinHOPZfPaYcAwgOjo6HYbNtigJcYYfzkHy5dr4q1dG84/H3bvhipV9Ppv9+5HH23aQIkS/sZrVda5E7Yl5ACfAuOBLBOyc24EMAL0GnIhxmWMMccYMQJ+/lkT8c6dOu3yyzUhV6oEK1ZAo0b5e/3XFJ6wTMgicopzbpX39HxghZ/xGGNMoLQ0bQH9228QHw/PP6/TP/lEG16dey707KmtoBs2PPq6U0/1JVyTT4p8QhaR0UAvoKqIbEZLwn1FpDF629MGIMcW1sYYU9C+/x5GjtQS8O7dOq1pUxg+HIoXh/HjoWxZf2M0BafIJ2Tn3OVZTB5Z6IEYY4wnPR2WLoXJk/Xx9ttQvbp2zLF0KQwaBL16aSm4bt2jr7NkXLQV+YRsjDHBYtkyeOwxrYpOSNBp9evDxo2akO+8E+6+29cQjY8sIRtjTAHYuBF++QV+/VUbXV18MURGaoccffvC6afrIybm6GusMVZ4s4RsjDH5JDUVbr1V7/dds0anVasGnTrp/w0baqMsEf9iNMHLErIxxpyAgwe1J6xJk/T5v/+tDa8WLYJmzeD226F3b2je/GgCtkRsjscSsjHG5MGHH8L778P06TpAQ2Sk3oaU4Y8/LPGaE2NXLIwxJhvr1mkL6Msu04EYQDvf2LNHS8A//qi3J3377dHXWDI2J8pKyMYYE2D5cnjtNR39KKM/6Hr1YP16aNIEnn5a7ws2Jr9ZCdkYE7bS0mDWLHjqKa2CBi39fvihJt9XX9UEvWGDPgdrCW0KjpWQjTFhJSUFPv1Uq5snToTERK1mLlkSunbVFtG7dum1YWMKkyVkY0yRlpKipd/du2HAAB0P+L77tKTbrx+cfbaOBVytmi4fEWHJ2PjDErIxpsjZvBkmTNBS8KRJkJSkoyANGKAJd+5cqFPHqp9NcLGvozEm5KWkwLRpOk4waPeUw4bB7NnaQvrrrzUJZ6hXz5KxCT5WQjbGhKTt27UE/MMP8NNPsHcvLFwILVvC/fdrn9DNmtltSCZ0WEI2xoQE5yA5GaKidISkM87QaTVr6uhIfftCgwa6bOPG/sZqzImwhGyMCVoHD+o14PHjYdw4+Mc/4OGHoUMHeOIJbZTVurVVP5uiwRKyMSboOKejI40frz1klSunraHbttX5ZcvCo4/6G6Mx+c0SsjHGV87BggXw3Xc6ZOHIkXrdt3JlbZh13nnQo4fdimSKPkvIxhhfzJ0Lo0YdTcQi2jFHxoANI0b4HaExhcuuvBhjCkVSEnz+OSQk6PMZM+Ddd/Ua8MiREB+vty5ZSdiEKyshG2MKzPbtWgL+5hv45Rct/b7/PgwerI8hQ6B0ab+jNCY4WEI2xuSr5GTtF3rbNu0NKz0d6teHW2/VnrK6dtXlypTxN05jgk2RT8gi8h7QH9jhnIvzpv0bOA84AqwBhjjn9vgXpTGhbdky7Q3rq680+X79td4f/Oqr0K2bdtZhHXQYc3zhcA15FHBOpmkTgTjnXEtgJfBgYQdlTFHw5pvQtCk0b663IZUurR12ZLjlFmjVypKxMblR5BOyc24qsCvTtJ+dc6ne0xlA3UIPzJgQ45yOHfzgg1otDdpAq3ZteOMN2LIF/vhDk7AxJu/EZfTGXoSJSCwwLqPKOtO874HPnXMfZ/PaYcAwgOjo6HYbNmwowEiNCS7OwcyZ8MUX8OWXentS8eLw++/QubPOt9KvyYmIzHXOtfc7jmBX5EvIxyMiDwOpwCfZLeOcG+Gca++ca18tY8BUY4ow5+DAAf1/9mzo0gVeew1atND7hnfs0GQMloyNyU9FvlFXdkTkWrSx1xkuHKoJjDkO52D+fL1PeMwYOPdcvT7coQOMHg3nnAMVK/odpTFFW1gmZBE5B/g/oKdz7qDf8RjjpxdegLffhtWrtTq6Tx/o3Vvnieh4wsaYglfkq6xFZDTwJ9BYRDaLyFDgdaAcMFFEFojIW74GaUwhWrMGXnlFS8UA69ZBbCy8847eOzxhAlx0ka8hGhOWwqJRV35p3769mzNnjt9hGJNn8fFaHf3pp3pdGGDJEr1dyRpmmYJmjbpyp8iXkI0Jd1OnQt26cNddkJoKzz8P69drMgZLxsYEi7C8hmxMUZWcrFXOn3wCHTvCfffp30cfhUsv1U48jMmruRt20y6mkt9hFHlWQjamCJgxA26+GWrVggsvhClTtA9pgKgoePxxS8Ym79LSHc+MX8ag/07n56Xb/A6nyLMSsjEhautW7SULYPhwmDRJB2+46io480woUcLf+Exo23c4hTs+W8CvK3YwuGssvZtU9zukIs8SsjEhZO9evU/4gw9g+nRYu1ZbSL/6KlSuDOXL+x2hKQo27TrI9R/MYfXO/Tw1II6rO8f4HVJYsIRsTAhYvx4eekjHFT58GJo00VJxuXI6PzbWz+hMUTJn/S5u/GguKWnpfDCkI91Oqep3SGHDErIxQWrlSkhKgvbtdezgX3+F666Da6/VHrSsdbTJb1/O3cxDXy+mTqVSvHttexpWK+t3SGHFErIxQWTfPh3I4b33dOSkXr1g8mSoVk1HUypWzO8ITVGSmpbOim37mLdxN9NXJ/Lj0m10bViFN69sS8XSkX6HF3YsIRsTJJ55Bp59Vgd2aNxY7xe++uqj8y0Zm0BLtuzlizmbaFa7POfE1aJCqZxb8R06ksbMdYnM3bCbuRt2s2DTHg4eSQOgermSDOvRgPvObkyJYnYDjh8sIRvjkx074MMPYdgwbYxVsyZcfrlWS3fubFXSJmvL45P4z8SV/LxsO8UjhNR0x6Njl3JGk+oMaFOHXo2rUbL40bO3bXsP88uK7fy6fAfTVieQnJpOsQihaa1yXNyuLm1jKtEuphJ1KpZC7EvnK+s6Mw+s60xzstLT9fakd96BsWMhJQW++goGDvQ7MhPsVu/Yx38mrWL8onjKlSzO0O71ua5bfdbtPMC3C7bw/cKtJOw/Qvmo4vRrWYtqZUvyy4odLN2aBEDdSqXo07QGvZtUp11MJcqULLzymHWdmTuWkPPAErI5Gbt2Qdu2sGEDVKmijbOuv9467DDZO5KazuIte/h4xkbGLthCqRLFGHJafW7o3oAKpY+tok5NS+ePNYl8O38LPy3dxuGUNNrFVKJ3kxqc0bQ6p1Qv61sJ2BJy7liVtTEFJD0dJk7U1tK33ab3CZ9/Ppx2mnbgUbKk3xGaYHPwSCrzNuxh1vpdzFqXyIJNezickk5UiQhu6N6AG3s2pHKZrBtbFS8WQc9Tq9Hz1GocOpLGkbT0XF1XNsHDSsh5YCVkkxvbt8P772u19Nq1UK+ejjUcaY1WTYD9yamsiE9ieXwSy+KTWLpVH2npjgiBZrXL0zG2Ch3rV6Jzgyoh3erZSsi5YyVkY/LRRx/B0KF6bbhXL205feGFloyN+mX5dr6Ys5nl25LYkHjw7+kVSpWgaa1y3NSzAR1iK9MuphLloqx0G24sIRtzEvbvh48/hlatoEsXfdxyC9x4o/amZQzAzn3JPP79UsYviqdWhSjaRFfkorZ1aVa7PE1rladWhShr4WwsIRtzIpYvhzff1D6l9+3TsYa7dIFGjeA///E7OhMsnHN8PW8LT41fxsHkNO4961Ru7NnQ7vM1WbKEbEweXX21loojI+GSS7RE3KmT31GZYLN590Ee+mYJU1fupF1MJf41qAWNqpfzOywTxCwhG5ODPXvgk0+0Grp4ce20o2lTvWWpuo1IZzLZc/AIX8zZzH8mrUSAJ85vztWdY4iIsCppc3yWkI3JxooVOqzhBx/AwYN6TfiMM7REbMLHrgNHAKhUukS213mTDqfw89LtjFu0lWmrEkhNd/Q8tRrPXBhH3UqlCzNcE8KKfEIWkfeA/sAO51ycN+1i4HGgKdDROWf3Mpm/JSZqtfSECXqv8BVX6H3Ebdr4HZkpbGNmb+KRb5f8fU9v/aplaFCtDA2qlqF+1bKkpKUzblE8U1fu5EhaOnUqlmJot/r0b1mbuDrlraGWyZMin5CBUcDrwIcB05YAA4G3/QjIBJ/Dh2HpUmjXDipV0gEenngCbrrJqqXDUWpaOs/8sJz3/1hPt0ZV6dW4GusSDrAu4QB/rknk63lb/l62Zvkoru4SQ/+WtWhdr6IlYXPCinxCds5NFZHYTNOWA/bDMezcCW+8oS2m09Jg0yYoXRqmTPE7MuOXPQePcOun85m2OoHrTqvPQ32bUDxTq+iDR1JZn3CQlLR0WtSpYNeHTb4o8gn5ZInIMGAYQHR0tM/RmPyyfj0895xeHz58GPr3h7vvhlKl/I7M+GnV9n1c/+Ectu45xPODWnJJh3pZLlc6sjjNapcv5OhMUWcJOQfOuRHACNCuM30Ox5yk5GS9LhwfD6NGwTXXwD336PjDJrxNWradOz9fQFSJYnw2rDPtYir7HZIJM5aQTZGXng7ffw//+he0aAFvv62deGzZoqMumfC1addBflu5kyl/7eCXFTuIq12Bt69uR+2KVlViCp8lZFNkpaTA6NGaiJctg9hYGDz46HxLxuEnOTWNWet28dtfO/ntrx2s2XkA0LGCr+9Wn7vPbEypyGI+R2nCVZFPyCIyGugFVBWRzcBjwC7gNaAaMF5EFjjnzvYvSlMQHn4Y/v1viIvTnrUuvVQ79jBFm3OONVPUQZgAACAASURBVDsPsD7hAOsTD7Ah8eDff7fsOURauiOyWASdGlTm8o7R9GpcnYbVylgjT+M7G34xD2z4xeC2Z4+2mD7zTOjYEdat01uZ+vUDO9aGhw2JB3jw68VMX5P497RyUcWpX7UMMVXKEFO5NG2iK9KlYRVKR9rZWWGx4Rdzx76RJuQlJsLLL2uvWklJ4Jwm5Pr19WGKvrR0x3vT1vHixL8oERHBI/2a0i6mErFVylDxOD1sGRNMLCGbkPbMM/Dss9qRx8CB8Mgj1qNWuFmxLYn/+3IRCzfvpU/T6jw1II5aFaxRlgk9lpBNyNm2TXvPiojQ0vD55+v14ubN/Y7M5Kd9h1N4b9p6fl62jZrlo4ipUobYqqX1b5XSVCtXkrd+W8Obv62hQqkSvHZ5G/q3rGWlYROyLCGbkBEfr515vP22jr40aJAmYjv+Fi0Hj6Ty4Z8beGvKGvYcTKFDbCW27DnE9DWJHEpJ+5/lB7apw6P9m1GpTKQP0RqTfywhm6C3bZveuvTWW3or07XXQtu2Os+ScdFxOCWN0bM28sbkNSTsT+b0xtW4+8zGtKhbAdDW0zv3JbPeazW9addBOtavTPdTqvkcuTH5wxKyCWrOQZ8+OhTi1VfrNeKGDf2OyuSndQkH+GX5dkZOW0f83sN0aVCFt69u+z89ZYkI1ctHUb18FB3rWy9apuixhGyCzq5devvSvfdq39Jvvgm1a0OjRn5HZvLDoSNpzFibyG9/7eC3lTvZkHgQgLbRFXnx4lZ0bVTV5wiN8YclZBM09u+HV17RzjySkrS1dP/+0KOH35GZk5Gals6SrUnMWJvI9DWJzFibyJHUdKJKRNC1YVWGdqtPz1OrEVOljN+hGuMrS8jGd2lp8NprMHy4Dod4wQXw1FPa77QJPSlp6SzespeZa3cxY20ic9bv4sARbYzVqHpZruoUQ6/G1ehYvzJRJaybSmMyWEI2vouIgDFjoGVLva+4Uye/IzJ5lbA/md/+2snkFTuYunIn+5JTATilelkGtq1LpwaV6VS/CtXKlfQ5UmOClyVkU+icg3HjNPmOHQs1asCPP0J5G142ZDjnWLo1iV9X7ODXFTtYuHkPzkH1ciXp26IWPU7VErAlYGNyzxKyKVQzZsD998Pvv8Mpp8DmzZqQLRmHhm17D/PN/C18OXcTa3YeQARa1q3IXX1OpXeT6jSrVZ6ICLsXzZgTYQnZFIrUVLj8cvjyS03Ab74J118PJUr4HZnJyeGUNCYu286Xczfz+6qdpDvoEFuJ67s34MxmNaha1krBxuQHS8imQB06pLcuFS+u4w8/8QTcfTeULet3ZOZ40tIdM9YmMm7RVsYviifpcCq1K0Rxy+mNGNi2LvWrWotoY/KbJWRTII4cgddf15bTv/6qDbbeesvvqMzxpKc7Zq/fxbhF8UxYEk/C/iOUjizGWc1qcFG7enRtWMWqo40pQJaQTb5yDr75Rq8Tr1kDZ58NUVF+R2WOZ3l8EmPmbOKHxfFsT0omqkQEvZtUp3/L2pzeuDqlIu3WJGMKgyVkk2+cg3PPhZ9+gmbNYMIEOOccv6MyWTl4JJVxC+P5dNZGFmzaQ2SxCHo2rkb/lrXo07QGZUraocGYwma/OnPS9u7VVtIicOaZMGCANtgqbt+uoLN0615Gz9rI2Plb2ZecSqPqZXm0fzMGtqljoyUZ47OQO2SKSDGgBgGxO+c2+hdR+EpN1evCjz4KH32k3Vzec4/fUZmsLN26l6fHLefPtYmULB5Bv5a1uLxjNO1jKtn4wcYEiZBKyCJyG/AYsB1I9yY7oKVvQYWpyZPh9tthyRI44wwbgSlYJe5P5sWJK/ls1kYqlCrBI/2acnG7elQobfebGRNsQiohA3cAjZ1zibl9gYi8B/QHdjjn4rxplYHPgVhgPXCJc253vkdbRN1yi95HHBsLX30FF15o4xIHm5S0dD78cwMvT1rJoSNpDO5anzvOOMUSsTFBLNQS8iZgbx5fMwp4HfgwYNoDwC/OuedE5AHv+f/lS4RFVGqqJt1ixeC006B6dW1JXaqU35GZQM45pqzcyVPjlrFm5wF6nFqNf/ZvSqPq5fwOzRiTg5BIyCJyt/fvWuA3ERkPJGfMd869lN1rnXNTRSQ20+QLgF7e/x8Av2EJOVvTp8PNN2tDrdtugyuu8Dsik9nhlDTGLtjCqOkbWB6fRGyV0oy8tj29m1S3a8TGhIiQSMhAxun9Ru8R6T1AryHnVQ3nXDyAcy5eRKpnt6CIDAOGAURHR5/ApkJXYiI88AC8+y7UrQsxMX5HZDLbtOsgH8/cwOezN7HnYAqNa5Rj+IUtuKhdXSKLR/gdnjEmD0IiITvnngAQkYudc18EzhORiwt42yOAEQDt27c/keQfksaOhaFD9Zam++6Df/7TursMFs45pq9JZNT09fyyfDsiwlnNanBt11g61a9sJWJjQlRIJOQADwJf5GJaTraLSC2vdFwL2JEv0RUhFStCkyZ6W1NcnN/RGIC9h1L4et5mPpqxgbU7D1C5TCQ39WzIVZ1jqF3RLuYbE+pCIiGLyLlAX6COiLwaMKs8kHoCq/wOuBZ4zvs79qSDDHGpqfDyy7BnDzz9NPTsqUMkWmHLf8u2JvHRjPV8O38rh1LSaBNdkZcuaUXfFrWIKmHdWhpTVIREQga2AnOA84G5AdP3AXcd74UiMhptwFVVRDaj9zE/B4wRkaHoNekCrfYOdvPmwQ036N+BAyE9HSIiLBn7yTnHtNUJvDJpFXM27CaqRAQXtKrD1V1iiKtTwe/wjDEFICQSsnNuIbBQRD4FBGiCNub6yzl3JIfXXp7NrDPyN8rQc/gwPPYYvPgiVKumYxUPHGiJ2G9zN+zm3z+tYMbaXdSpWMo68zAmTIREQg5wJvA2sAZNzPVF5Ebn3AR/wwpNGzbAq6/CddfB88/rdWPjnxXbknjhp7+YtHwHVctG8th5zbiiUzQli1u1tDHhINQS8kvA6c651QAi0hAYD1hCzqXDh7UkfNVV0LgxrFwJ9er5HVV4Wx6fxFtT1vDdwq2ULVmc+85uzOCusTbikjFhJtR+8TsykrFnLdZCOtdmzoTBg2HFCmjaFNq1s2Tsl027DvLdwq18t2Arf23fR1SJCG7q2ZAbezSgYmkbdcmYcBRqCXmpiPwAjEGvIV8MzBaRgQDOua/9DC5YJSfrfcQvvAB16uh4xe3a+R1V+Encn8wPi+MZu2ArczZo1+ntYirx5AXN6deiFlXKlvQ5QmOMn0ItIUehIz319J7vBCoD56EJ2hJyJs7B2WfDlCna9eULL0AFa6RbKI6kpjN/426mrU5g6qoEFm/eQ7qDU2uU5b6zG3N+q9rUq1za7zCNMUFCnAubzqdOWvv27d2cOXP8DiNX0r3BKSMitNet4sWhXz9/YwoH25MOM2FxPL+vSmDG2kQOHEmjWITQqm4Fup1SjXPjatKkZjnrTcuEFRGZ65xr73ccwS6kSsgicirwX7Qv6jgRaQmc75x72ufQgsqmTXqt+Lzz4M474YIL/I6o6Fuzcz8jpqzlm/lbOJKWTmyV0lzYtg7dT6lGl4ZVKB9ltyyZELRunXZQ0LAhtG7tdzRFXkglZOAd4D701iecc4u8e5MtIXtGj4Z//ANSUuCaa/yOpuhbsGkPb/22hp+WbSOyWASXdqjHkNNiaVDNOv42ISI1FdasgaVL9bFqFXzwgXZI8PTT8N57cO+9lpALQagl5NLOuVmZqvtOpOvMImffPh0i8ZNPoEsX+OgjPak1+S8lLZ1pqxIYMXUtf65NpHxUcW7p1YjBp8VS1RpmmWCVng7r18OSJdC7t44W8/rrmmyTvdFsRaB+fR3qrWpVuOceuOUW7djeFLhQS8gJ3r3HDkBELgLi/Q0pOCxYAGPGwBNPwEMP6TVjk3+SU9P4Y3UCExZvY+Ly7ew5mELN8lE83Lcpl3eKpqzdM2yChXP6iIiARYvglVc0CS9dCgcO6DLTpsFpp0HLljrIeVycPpo0gTJljq6rWTN/3kOYCrWjyC3oUIhNRGQLsA640t+Q/OMczJihJeLu3bXWye4rzj9HUtOZ/NcOJiyO55flO9iXnEq5ksXp06wG58TV5PTG1W3MYeOv5GSYPx8WLz728d//wsUXQ1ISjBunyXbo0KOJN6P6uUcPfZigEBIJWUTuDnj6AzAZiAAOAIPQHrzCSmIiDBmiv7U5c6BtW0vG+WnG2kQe/mYxa3YeoGLpEpzboibnxtWia6Mq1pWlKXxpaXrGvWiRJtwOHaB/f9i6Vc/IQUu2cXFw4YVHDwannQbbt/sXt8mTkEjIQDnvb2OgAzpcogBXA1P9Csovv/8OV1yhv7P//AfatPE7oqJj94EjDP9hOV/M3Uy9yqV4++p29G5SnRLFrCRsCsnu3ToOav36moi7dYOFC+HQIZ0fEQH3368JOSZG72uMi4PYWJ0XyG6vCykhkZCdc08AiMjPQFvn3D7v+ePAFz6GVuheegnuuw8aNIA//7Qet/KLc46v5m1h+A/LSTqUws29GnJ771MoFWmlYVPAxo3Ta08LFmgJeNMmOOccmDABihXTTuc7d4ZWraBFC72uW6qUvjYiAs4/39/4Tb4JiYQcIBoIHG7xCBDrTyj+KFYMBg2Cd9+F8uX9jqZoWL1jP498u5gZa3fRLqYSwy9sQeOa5XJ+oTG5dfCgVjXPn6+J98ABvRUCdPzT33/XBlXdu2vi7dTp6GtHjfIlZFP4Qi0hfwTMEpFv0JbWFwIf+BtSwVu8WC8VnX023H67Pqwm6uTsOnCEHxbH893Crcxev4tyJYsz/MIWXNahHhERtnPNSdi+XUu6ffroD/Wee+Dll492n1exol4Ddk7nf/IJVK4MUVH+xm18F1IJ2Tn3jIhMALp7k4Y45+b7GVNB+/hjGDZMLxUtWaIlZHNi9ien8vPSbXy3cCvTViWQmu5oVL0sd/U5lcs7RlOtnN1DbE7AokV6z+H8+fqI9+7E3LIFatfWUm/58tqyuXVriI4+9oy6dm1/4jZBJ6QSMoBzbh4wz+84ClpyMtx9N7z5JvTsCZ99Zsn4RO06cIRXf1nF6FkbSU5Np07FUlzfvQHnt6pN01rWr7TJhfR07cFq3ryjj5de0urlRYvgued0TNM+fbSVZevWWuoFGDBAH8bkIOQScjg4cADOPFMbbd17Lzz7rHX0cSIOp6TxwfT1vD55NQeSU7moXV0u7VCPNvUqWbW0yV5amg4aXqEC1K2r9xWefjrs36/zS5bUDjWSkvT5oEH6yGhoZcwJssN8ECpdGtq3h7vu0nv7Td445/h+UTzP/7iCzbsPcXrjajzYtymn1rCGWiYLyclaBTVnDsydq7cYHTwITz4Jjz6qfdAOGaI3+7dtqyXhEgGDhVgiNvnEhl/Mg4IefnHMGL2d0HqrO3FzN+zmqXHLWLBpD01qluORfs3odkpVv8MywSCj2nnOHH3ExOhwaKmpeo03IkKrm9u100f37npvrzlpNvxi7oR1CVlE7gBuQDsZecc597IfcaSn64n48OFw9dXw4Yd+RBHanHP8d8oaXvjpL6qVK8nzF7VkUNu6FLOq6fDkHOzaBVWq6POrroLvvz9azVyqlP7YQK8HLVumvVtZQw3jo7BNyCIShybjjuj9zD+KyHjn3KrCjGPfPj1WfPcdXH89vPFGYW69aNh3OIV7v1jIT0u3079lLf41qCVlbLCH8JKYCLNnw6xZ+pg9W5Pu+vU6v149uPJKvRbUoYNWOwc2zLCSsAkC4XzUagrMcM4dBBCRKeh9zc8XVgDx8XDWWbB8Obz2mo5yZg1+82b1jn0M+2guGxIP8ki/pgztVt9aTRd1hw/r7UWzZsGtt2qp9tFHdUAFEb3m07evJt70dK2KfvZZv6M2JkfhnJCXAM+ISBXgENAX+J8LxCIyDBgGEB0dna8BVKqkXWC+/DKccUa+rjosTFgcz71fLKRUZDE+HtqJLg2r+B2SKSgLF8I778DMmfp/SopOP/NMTcA336wtINu3h3LWeM+EprBu1CUiQ9EhHfcDy4BDzrm7sls+vxp1TZyox41KlU56VWEpOTWNlyau5O0pa2ldryL/vaottSpYS9ciYe9eLfnOmKH3/T38sI5YNH48XHaZlno7dTr6qFXL74hNLlijrtwJ5xIyzrmRwEgAERkObC7obb75po4HfvPN8PrrBb21oiNxfzKT/9rJL8u3M3XlTg4cSePKTtH887xmNhxiqEpP1xGMypSBDRugXz9tXJXRpWSzZjrqEWi/sXv2WKMrU6SFdUIWkerOuR0iEg0MBLoU1LbS03XEtBdfhPPOg3/9q6C2VHSsSzjAT0u3MWnZduZt3E26gxrlS3JBmzr0jatltzOFmn37tPQ7fbqWfmfM0Pt7X3xRS7oNGsCll+r4vh06aMccGaxnHBMGwv1b/pV3DTkFuMU5t7sgNnLoEFxzDXz5pbZBefllO9HPzuGUNH5YHM9nszYxa/0uAJrXLs9tvU+hT9MaxNUpb422QsXGjToqSufOWupt3PhoP8/Nm2vvVr176/PISL3VwJgwFtYJ2TnXPeelTt7evdoPwYsvau9blk/+17KtSXw2eyPfzN/CvsOpxFYpzf+d04QLWtemdkW7PhwSli+HX3+FadP0sXkzNGqknXGIwAsvaP/OnTvriEfGmGOEdUIuLDVr6khNZcr4HUnwmb1+F0+PW8bCzXuJLB7BuXE1ubRDPbo0qGIl4WB26JBWP8+cCffddzThvvce1KkD3bppY6yuXY++5oor/IvXmBAQ1q2s86qgu84MJ+np2rPWSxNXUqtCFNedVp8L29ShUplIv0Mz2Vm2DD76CKZO1Y43Mm49Wr1a+3teu1avxWQeXtCEPWtlnTtWQjaFLmF/MnePWcjUlTvp17IWzw1sQbmoEjm/0BSehARNvFOmaMOr1q216vmFF7TB1V13aV/PXbseHWawQQN/YzYmxFlCNoVqxtpEbh89nz2HUnh6QBxXdoq2qulgkZAAjz2mSXjpUp1WqpTe79u6NZxzjjaIKF3a3ziNKaIsIZtCkZbueHPyav4zaSWxVcowakhHmtUu73dY4Wv7dvjtN300bQq3366NHMaM0V5rrroKevTQ/yO9ywglS/oZsTFFniVkU6AS9iczYXE8X87dzMLNexnQujZPX9iCsjb4gz8efBDGjtUW0aDdTN54o/5fqpQm6ogI/+IzJozZUdHku72HUvhpyTa+X7SVP1YnkO7glOpl+fdFLbmoXV2roi4Me/fqNeDJk2HTJvjiC52+caOOAzx4MPTqBW3bHtvphiVjY3xjCdnkm7U79zP8hxVMWbmDlDRHTJXS/KNXI85rVZvGNa3D/0IxZoze8D5njnYPFxWltx8lJ2uV8yef+B2hMSYblpBNvvhjdQI3fzyXiAhhcNdYzmtVmxZ1KlhpuKCkp+sQhL/8ApMmwdtvQ/36en9w8eI6KEPv3toJR1SU39EaY3LBErI5aZ/O3Mg/xy6hQbUyjLy2A/UqWyvcArNmDTz0kCbhXdq1KHFxsG2bJuRrr9WHMSbkWEI2Jywt3fHM+OW898c6ejWuxmuXt7H7ifPTvn16DXjiRC3pXnmlNsL64w8doaRPH33UrOl3pMaYfGAJ2ZyQfYdTuOOzBfy6YgdDTovl4b5NKV7MGgSdNOfg3/+GH37QUZFSUvS+36reyFbVq2sjLbsUYEyRYwnZ5NmmXQe5/oM5rN65n6cHxHFV5xi/QwpdCQnw00/a+vnBBzXRfvutXgu++24dB7hr12PvAbZkbEyRZAnZ5NrWPYcYMXUto2dtpGTxCD4Y0tHGJD4RS5fqbUgTJmif0M7pgAz33acNsiZPtk44jAlDlpBNjtYnHOC/v63h6/mbcQ4GtKnD7b1PIbqKNd7KlV27tBTcrx+UL6/j/j75JHTsqF1V9u0L7dodvQfYkrExYckSssnWim1JvDF5DeMXbaV4sQgu7xjNsB4NqFvJEvFxOael4PHj9fHHH3qb0ldfwcCBMGwY3HDD0evCxhiDJWSTjRFT1zD8hxWUiSzGDT0aMLRbfaqXs/tZs5WcDElJUK0arFgBLVro9Nat9dpwv35aIgaoUsW/OI0xQcsSsjmGc47nJqzg7alr6deiFs9cGEfF0jZGcZYSErQ19Pffw48/wqBBMGoUNGmif884A+rW9TtKY0yIsIRs/paals5D3yxmzJzNXNkpmicviKNYhLXozdKVV8Jnn2lVdK1acMUVcMklOk/EOucwxuSZJWQDwOGUNG4fPZ+fl23n9jNO4a4+p1i3l6DXg+fO1RGSfv9du6osVkwbYTVsCOefrwM02KAMxpiTFNYJWUTuAq4HHLAYGOKcO+xvVIUv6XAKN3wwh5nrdvH4ec0YfFp9v0Py3/Ll8Oabek/w5s2ahLt312rqGjX0HmFjjMlHYXtaLyJ1gNuB9s65OKAYcJm/URW+nfuSueztGczdsJtXLmsdvsk4OVmvB69apc83b4aRI6F9e/jgAx0nePJkTcbGGFMAwrqEjL7/UiKSApQGtvocT6FJTUtn9OxNvDxxJQeOpPLute3p1bi632EVrkOHtDHWF1/AuHHad/SDD8Lw4XD66bBzJ5Qp43eUxpgwEbYJ2Tm3RUReADYCh4CfnXM/Z15ORIYBwwCio6MLN8gC4Jzj1xU7GP7DctbsPEDH2Mo8dn4zmteu4HdohcM5bXSVlqbXgOPj9TakSy7RVtK9e+tyxYvrwxhjCknYHnFEpBJwAVAf2AN8ISJXOec+DlzOOTcCGAHQvn17V+iB5qMlW/Yy/IflTF+TSP2qZXj76nac1axG0W+8deiQdlP5+efaZ/Sff+o14aeegpgY6NXLkq8xxnfhfBTqA6xzzu0EEJGvga7Ax8d9VQjaeyiFJ79fxtfzN1OxVAmeOL85V3SKpkRRH51p1ix47TVtmLV/v3baMWgQHDkCkZEwdKjfERpjzN/COSFvBDqLSGm0yvoMYI6/IeW/zbsPct2o2azdeYBhPRpwy+mNKF9UxyxOS9OGV3FxOkbwypXadeWll8Jll1lJ2BgT1ML26OScmykiXwLzgFRgPl7VdFGxZMtehoyazeGUND68riNdGxXBvpOdgzlz4NNPtaOObdvgpZfgrrvg4ov12nCk9TRmjAl+YZuQAZxzjwGP+R1HQfhl+XZuGz2fSqUj+eT6Tpxao5zfIeW/5GRo00bvGY6M1P6ir7hC/4KNmmSMCSlhnZCLqo/+XM9j3y2lee0KjBzcvugMCpGYqKXgtWvhxRc14fbvD/fco6MoVarkd4TGGHPCLCEXIenpjud+XMGIqWs5o0l1Xr28DWVKhvhHnJys14E/+kj/pqRoqTijYdbzz/sdoTHG5IsQP1qbHfsOM2f9bmav38WfaxJZsW0f13SJ4bHzmofuwBDO6SMiAl5/He69Vxtp3X47XH01tGrld4TGGJPvLCGHmPR0x9iFW/hjdSJz1u9ifeJBAKJKRNC6XkWeG9iCSzvUC817i3fsgI8/hvff1x6zrrhCR1Vq3hz69LEW0saYIs2OcCHEOcejY5fwycyNVC4TSfuYSlzZKYb2sZVoXrsCkcVD8L7i9HTttvK997RKOjUVOnWCihV1fs2acM45/sZojDGFwBJyiHDO8eyEFXwycyM39WzI/53TODRLwRl279ZGWCJaGk5MhDvvhCFDoFkzv6MzxphCZwk5RLz262pGTF3LNV1iQjcZJyfDN9/Au+/qvcNbtujgDePGQd26UKKIdlhijDG5YAk5BIycto6XJq5kUNu6PH5e89BLxps2wcsv6zCGiYkQG6sNtdLSdH79MB3y0RhjAlhCDnKfzdrIU+OWcW5cTf41qAURodJyOiVFhzOsXFmHMXz1VRgwAG64QRtoRYTg9W5jjClAlpCD2NgFW3jwm8X0alyNVy5rQ/FQGAxi0yZ45x2tlj7rLBg1Ctq21WEOqxbBrjuNMSafWEIOUj8v3cbdYxbSMbYyb13VLvhbUE+bpn1Ijx2r9xCfe64O6JDBkrExxhyXJeQg9PPSbdzy6Tzi6lRg5OAORJUo5ndIWTt4EEqV0pbSX30FU6boteGbbrLrwsYYk0dBXuwKPz8u2cY/PplH89oV+GhoR8oGY9eX69Zp4q1TB379Vaf985+weTP861+WjI0x5gQE4dE+fE1YHM9to+fTsm4FPriuI+WCadxi5+DPP7Va+ptvtFQ8aBBUr67zbWAHY4w5KZaQg8T4RfHc/tl8WteryKghHYIrGYO2mr7oIjh8GO6/H265Re8dNsYYky8sIQeB7xdu5c7PF9A2uiLvDwmSauqkJG0tPXasVktHRsL330OTJtqZhzHGmHxl15B9NnbBFu74bD7tYioxKhiScXy8dmUZHa3XiSMidNAHgHbtLBkbY0wBCYKiWHhKTUvn1V9X89qvq+hUvzLvDe5A6UifP45Fi6BDBx3g4aKL4L77oH17f2MyxpgwYQnZB/F7D3HH6AXMWr+LQW3r8vSAOEpF+nRr0+zZsGaN3jMcFwcPPKBjDjdq5E88xhgTpiwhF7JJy7Zz75cLOZKazkuXtGJgW58aRk2bBk89BT//rLcpXXwxFCsGTzzhTzzGGBPmwvYasog0FpEFAY8kEbmzoLaXnJrGk98v4/oP51C7QinG3dbNn2Q8bx706gXdu8OCBXrf8MKFmoyNMcb4JmxLyM65v4DWACJSDNgCfFMQ21qfcIDbRs9n8Za9XNslhgf7Ni3c3rec0161ypTR68OrV+voSzfcAKVLF14cxhhjshW2CTmTM4A1zrkNBbHyFyeuZEPiAd66qh3nxNUsiE1kzTn46SftRatFCxg5Ejp21J62bOxhY4wJKpaQ1WXA6KxmiMgwYBhAdHT0Ca38ifObc/BIY+pWKqTSqHN67/A//wnTp0NMDPTocXS+JWNjjAk6+J8H3AAABmhJREFUYXsNOYOIRALnA19kNd85N8I51945175atWontI3KZSILLxkDvPCCjjm8cSO89RasXAnXXlt42zfGGJNnVkKGc4F5zrntfgdyUubOhZIl9dalSy/VUZhuuEGnGWOMCXphX0IGLieb6uqQsGqVJuD27eGxx3RadDTceqslY2OMCSFhnZBFpDRwJvC137HkWXw83HwzNGsG48bBo4/C++/7HZUxxpgTFNZV1s65g0AVv+M4ISNHwrvvwrBhmoxrFmLrbWOMMfkurBNySElL0yRcty707Qt33qndXVoXl8YYUySEdZV1yJg4Edq0gRtvhM8+02lly1oyNsaYIsQScjD76y/o3x/OOgv274cvvoAPPvA7KmOMMQXAqqyD2cyZ8Pvv8PzzcNttEBXld0TGGGMKiCXkYJKeDh9+qH+vuw6uukqvF1et6ndkxhhjCphVWQeLefOgWzcYMkSrpp2DiAhLxsYYEyYsIftt1y74xz+0Y4/Vq/Ve4vHjQcTvyIwxxhQiS8h+W7IERozQa8QrV8LgwVoyNsYYE1bsGrIf1qyB336DoUN1FKa1a7W7S2OMMWHLimKFKSUF/vUvHQDivvtgzx6dbsnYGGPCniXkwjJrll4nfuABbTm9eDFUrOh3VMYYY4KEVVkXhsRE6NULKleGb76BAQP8jsgYY0yQsYRcGKpUga+/hq5doXx5v6MxxhgThCwhF5ZzzvE7AmOMMUHMriEbY4wxQcASsjHGGBMELCEbY4wxQcASsjHGGBMELCEbY4wxQcASsjHGGBMELCEbY4wxQcASsjHGGBMExDnndwwhQ0R2Ahv8jiMHVYEEv4Pwme0D2wfh/v4huPZBjHOumt9BBDtLyEWMiMxxzrX3Ow4/2T6wfRDu7x9sH4Qiq7I2xhhjgoAlZGOMMSYIWEIuekb4HUAQsH1g+yDc3z/YPgg5dg3ZGGOMCQJWQjbGGGOCgCVkY4wxJghYQg5RIlJPRCaLyHIRWSoid3jTK4vIRBFZ5f2t5HesBUVEokRklogs9PbBE970sNkHGUSkmIjMF5Fx3vOw2gcisl5EFovIAhGZ400Lm30gIhVF5EsRWeEdE7qE0/svKiwhh65U4B7nXFOgM3CLiDQDHgB+cc6dAvziPS+qkoHezrlWQGvgHBHpTHjtgwx3AMsDnofjPjjdOdc64N7bcNoHrwA/OueaAK3Q70I4vf8iwRJyiHLOxTvn5nn/70N/gHWAC4APvMU+AAb4E2HBc2q/97SE93CE0T4AEJG6QD/g3YDJYbUPshEW+0BEygM9gJEAzrkjzrk9hMn7L0osIRcBIhILtAFmAjWcc/GgSRuo7l9kBc+rql0A7AAmOufCbh8ALwP3A+kB08JtHzjgZxGZKyLDvGnhsg8aADuB973LFu+KSBnC5/0XGZaQQ5yIlAW+gv9v7/5dfYrjOI4/3/lRklIyKOmmZCBxh7uQhETdLFIGJf+BwcKorDYZrEgSMRqkzLcUYULchEFSBoNehnPkzsr3+zn3PB/L99M5y/u86/T6ns/ndD6cS/J92vVMWpJfSXYDm4G5qto57ZomqarmgS9JFqZdy5TtTTILHKNbvtk/7YImaCUwC1xLsgf4gdPTg2QgD1hVraIL45tJ7vWHP1fVpv78Jronx2Wvn6J7AhxlXD3YCxyvqnfAbeBgVd1gXD0gycf+9wtwH5hjPD1YBBb72SGAu3QBPZbrXzYM5IGqqqJbM3qV5MqSUw+BM/34DPBg0rVNSlVtrKr1/XgNcBh4zYh6kORCks1JZoBTwOMkpxlRD6pqbVWt+zMGjgAvGEkPknwCPlTV9v7QIeAlI7n+5cQvdQ1UVe0DngLP+bt2eJFuHfkOsAV4D5xM8nUqRf5nVbWL7mWVFXR/Lu8kuVRVGxhJD5aqqgPA+STzY+pBVW2leyqGbvr2VpLLI+vBbrqX+lYDb4Cz9PcEI7j+5cJAliSpAU5ZS5LUAANZkqQGGMiSJDXAQJYkqQEGsiRJDTCQJUlqgIEsSVIDDGRpwKpqpt//9nq/J/Sj/qtlkgbGQJaGbxtwNckO4BtwYsr1SPoHBrI0fG+TPOvHC8DMFGuR9I8MZGn4fi4Z/6L7nrOkgTGQJUlqgIEsSVID3O1JkqQG+IQsSVIDDGRJkhpgIEuS1AADWZKkBhjIkiQ1wECWJKkBBrIkSQ34DUegZHt1TtelAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "%matplotlib inline\n",
+    "from matplotlib import pyplot as plt\n",
+    "import math \n",
+    "\n",
+    "(avg64, lst_of_results_64) = run_multiple_trials(64,1000)\n",
+    "plt.hist(lst_of_results_64)\n",
+    "plt.xlim(0,64)\n",
+    "plt.xlabel('Depth of Tree')\n",
+    "plt.ylabel('Frequency')\n",
+    "plt.title('Histogram of depths for n = 64')\n",
+    "print(f'Average depth for 64 = {avg64}')\n",
+    "assert avg64 <= 12 and avg64 >= 8\n",
+    "\n",
+    "plt.figure()\n",
+    "(avg128, lst_of_results_128) = run_multiple_trials(128,1000)\n",
+    "print(f'Average depth for 128 = {avg128}')\n",
+    "assert avg128 <= 16 and avg128 >= 12\n",
+    "\n",
+    "\n",
+    "plt.hist(lst_of_results_128)\n",
+    "plt.xlim(0,128)\n",
+    "plt.xlabel('Depth of Tree')\n",
+    "plt.ylabel('Frequency')\n",
+    "plt.title('Histogram of depths for n = 128')\n",
+    "\n",
+    "nmin=16\n",
+    "nmax=64\n",
+    "\n",
+    "lst_of_average_depths = [ run_multiple_trials(j,1000)[0] for j in range(nmin,nmax)]\n",
+    "plt.figure()\n",
+    "l1 = plt.plot(range(nmin,nmax), lst_of_average_depths,label='Avg. Depth')\n",
+    "plt.xlabel('n')\n",
+    "plt.ylabel('depth')\n",
+    "l2 = plt.plot(range(nmin,nmax), [1.6* math.log(j)/math.log(2) for j in range(nmin,nmax)],'--r',label='1.6log2(n)')\n",
+    "l3 = plt.plot(range(nmin,nmax), [2.2* math.log(j)/math.log(2) for j in range(nmin,nmax)],'--b',label='2.2log2(n)')\n",
+    "#plt.legend(handles=[l1, l2, l3])\n",
+    "plt.title('Average depth as a function of n and comparison with 1.6 log2(n), 2.2 log2(n)')\n",
+    "print('Passed all tests -- 15 points')\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "4056b62692317ac817d62d34fc7144e0",
+     "grade": false,
+     "grade_id": "cell-418c47c2b19ec6d1",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "The histograms and plots should show an amazing fact that although the worst case depth can be as large as $n$, the depth of a random binary search tree is concentrated between $1.8\\log_2(n)$ and $2.2 \\log_2(n)$.\n",
+    "\n",
+    "This is interesting since if we can ensure that the keys are inserted at random, a BST can be quite well balanced with very high probability. There are many clever ideas on how this can be achieved in practice even if the user does not insert keys randomly. One way is called _treaps_, which we sometimes present in this class but decided to leave out for the coursera data-structures class. You can watch the treaps lecture here:\n",
+    "https://youtu.be/d0rlrRZc-0s"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "39cdc01395ad419eede7a1da2162be60",
+     "grade": false,
+     "grade_id": "cell-c21e93398e157b12",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "## Solutions to Manually Graded Problems"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "deletable": false,
+    "editable": false,
+    "nbgrader": {
+     "cell_type": "markdown",
+     "checksum": "b1e699442c67899526caa73525835488",
+     "grade": false,
+     "grade_id": "cell-4bbf4468ca11cf32",
+     "locked": true,
+     "schema_version": 3,
+     "solution": false,
+     "task": false
+    }
+   },
+   "source": [
+    "### 2(A)\n",
+    "\n",
+    "Examples of worst case sequences include inserting in \n",
+    "ascending order [0,1,...,n-1] or descending order [0,1,...,n-1].\n",
+    "\n",
+    "\n",
+    "### 2(B)\n",
+    "\n",
+    "Assuming for the sake of contradition that s1 is not the least or maximum element. However, s1 will be the root of the tree. Then there must exist a non-zero number of elements that are in the left subtree of s1 and a non-zero number of elements in the right subtree. Therefore, the maximum size of any path from root to leaf must be strictly less than j. However, the height of the tree is j. Therefore, we obtain a contradiction.\n",
+    "\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
